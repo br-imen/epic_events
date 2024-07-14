@@ -1,5 +1,5 @@
 from sqlalchemy import Column, Integer, String, DateTime
-from config.database import SessionLocal, Base
+from config.database import Base
 from datetime import datetime
 
 
@@ -9,29 +9,39 @@ class Client(Base):
     id = Column(Integer, primary_key=True, index=True)
     full_name = Column(String)
     email = Column(String)
-    phone = Column(String)
+    phone_number = Column(String)
     company_name = Column(String)
     creation_date = Column(DateTime, default=datetime.utcnow)
-    last_contact = Column(DateTime)
+    last_contact = Column(DateTime, default=datetime.utcnow)
     contact_commercial = Column(String)
 
     # Active Record CRUD Methods
-    def save(self):
-        SessionLocal.add(self)
-        SessionLocal.commit()
+    def save(self, session):
+        session.add(self)
+        session.commit()
 
-    def update(self):
-        SessionLocal.merge(self)
-        SessionLocal.commit()
+    def update(self, session, **kwargs):
+        for key, value in kwargs.items():
+            setattr(self, key, value)
+        self.last_contact = datetime.utcnow()  # Update the last_contact time
+        session.merge(self)
+        session.commit()
 
-    def delete(self):
-        SessionLocal.delete(self)
-        SessionLocal.commit()
+    def delete(self, session):
+        session.delete(self)
+        session.commit()
 
     @staticmethod
-    def get_by_id(client_id):
-        return SessionLocal.query(Client).filter(Client.id == client_id).first()
+    def get_by_id(client_id, session):
+        return session.query(Client).filter(Client.id == client_id).first()
 
     @staticmethod
-    def get_all():
-        return SessionLocal.query(Client).all()
+    def get_all(session):
+        return session.query(Client).all()
+
+    def __str__(self):
+        return (
+            f"Client {self.id}: {self.full_name}, Email: {self.email}, Phone: {self.phone_number}, "
+            f"Company: {self.company_name}, Created: {self.creation_date}, "
+            f"Last Contact: {self.last_contact}, Commercial Contact: {self.contact_commercial}"
+        )

@@ -5,7 +5,6 @@ from sqlalchemy.orm import relationship
 from config.database import SessionLocal, Base
 
 
-
 class RoleEnum(enum.Enum):
     sales = "sales"
     support = "support"
@@ -31,7 +30,7 @@ class Role(Base):
         "Permission", secondary=role_permissions, back_populates="roles"
     )
 
-    def save(self,session):
+    def save(self, session):
         session.add(self)
         session.commit()
 
@@ -64,41 +63,48 @@ class Collaborator(Base):
     def verify_password(self, password):
         return bcrypt.checkpw(password.encode("utf-8"), self.password.encode("utf-8"))
 
-    def save(self,session):
+    def save(self, session):
         self.set_password(self.password)  # Ensure password is hashed before saving
         session.add(self)
         session.commit()
 
-    def update(self,session,**kwargs):
-        if 'password' in kwargs:
-            self.set_password(kwargs['password'])  # Hash the new password
-            kwargs.pop('password')
-        
+    def update(self, session, **kwargs):
+        if "password" in kwargs:
+            self.set_password(kwargs["password"])  # Hash the new password
+            kwargs.pop("password")
+
         for key, value in kwargs.items():
             setattr(self, key, value)
 
         session.merge(self)
         session.commit()
 
-    def delete(self,session):
+    def delete(self, session):
         session.delete(self)
         session.commit()
 
     def __str__(self):
-        return (f"Collaborator {self.id}, employee_number={self.employee_number}, "
-            f"name={self.name}, email={self.email}, role={self.role_id})")
-
+        return (
+            f"Collaborator {self.id}, employee_number={self.employee_number}, "
+            f"name={self.name}, email={self.email}, role={self.role_id})"
+        )
 
     @staticmethod
     def get_by_id(employee_number, session):
-        return session.query(Collaborator).filter(Collaborator.employee_number == employee_number).first()
-        
+        return (
+            session.query(Collaborator)
+            .filter(Collaborator.employee_number == employee_number)
+            .first()
+        )
 
     @staticmethod
-    def get_by_email(email,session):
+    def get_by_email(email, session):
         return session.query(Collaborator).filter(Collaborator.email == email).first()
+
+    @staticmethod
+    def get_by_name(name, session):
+        return session.query(Collaborator).filter(Collaborator.name == name).first()
 
     @staticmethod
     def get_all(session):
         return session.query(Collaborator).all()
-    
