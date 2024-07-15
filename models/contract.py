@@ -1,7 +1,7 @@
 from sqlalchemy import Column, Integer, String, Date, Boolean, Numeric, ForeignKey
 from sqlalchemy.orm import relationship
 from datetime import datetime
-from config.database import SessionLocal, Base
+from config.database import Base
 from models.client import Client
 
 
@@ -18,25 +18,25 @@ class Contract(Base):
 
     client = relationship("Client", back_populates="contracts")
 
-    def save(self):
-        SessionLocal.add(self)
-        SessionLocal.commit()
+    def save(self, session):
+        session.add(self)
+        session.commit()
 
-    def update(self):
-        SessionLocal.merge(self)
-        SessionLocal.commit()
+    def update(self, session):
+        session.merge(self)
+        session.commit()
 
-    def delete(self):
-        SessionLocal.delete(self)
-        SessionLocal.commit()
-
-    @staticmethod
-    def get_by_id(contract_id):
-        return SessionLocal.query(Contract).filter(Contract.id == contract_id).first()
+    def delete(self, session):
+        session.delete(self)
+        session.commit()
 
     @staticmethod
-    def get_all():
-        return SessionLocal.query(Contract).all()
+    def get_by_id(contract_id,session):
+        return session.query(Contract).filter(Contract.id == contract_id).first()
+
+    @staticmethod
+    def get_all(session):
+        return session.query(Contract).all()
 
 
 Client.contracts = relationship(

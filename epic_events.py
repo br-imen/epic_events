@@ -1,3 +1,5 @@
+from datetime import datetime
+from decimal import Decimal
 import click
 from controllers.client_controller import (
     create_client_controller,
@@ -12,6 +14,7 @@ from controllers.collaborator_controller import (
     delete_collaborator_controller,
     update_collaborator_controller,
 )
+from controllers.contract_controller import create_contract_controller
 
 
 @click.group()
@@ -41,7 +44,7 @@ def cli():
     help="The password of the collaborator.",
 )
 def create_collaborator(employee_number, name, email, role_id, password):
-    """Create a new collaborator"""
+    """Create collaborator"""
     create_collaborator_controller(employee_number, name, email, role_id, password)
 
 
@@ -63,7 +66,7 @@ def login(email, password):
 # List_collaborators
 @cli.command()
 def list_of_collaborators():
-    """List of collaborators"""
+    """List collaborators"""
     list_collaborators_controller()
 
 
@@ -145,7 +148,7 @@ def update_collaborator(employee_number, name, email, role_id, password):
     help="Commercial contact person",
 )
 def create_client(full_name, email, phone_number, company_name, contact_commercial):
-    """create client"""
+    """Create client"""
     create_client_controller(
         full_name, email, phone_number, company_name, contact_commercial
     )
@@ -154,7 +157,7 @@ def create_client(full_name, email, phone_number, company_name, contact_commerci
 # List clients
 @cli.command()
 def list_clients():
-    """list clients"""
+    """List clients"""
     list_clients_controller()
 
 
@@ -173,7 +176,6 @@ def delete_client(client_id):
 
 
 # Update client
-# Create client
 @cli.command()
 @click.option(
     "--id",
@@ -218,10 +220,23 @@ def delete_client(client_id):
     help="Commercial contact person",
 )
 def update_client(id, full_name, email, phone_number, company_name, contact_commercial):
-    """update client"""
+    """Update client"""
     update_client_controller(
         id, full_name, email, phone_number, company_name, contact_commercial
     )
+
+
+# Create contract
+@cli.command()
+@click.option('--client_id', prompt="client id",type=int, required=True, help='Client ID')
+@click.option('--commercial_contact', prompt="commercial_contact", type=str, help='Commercial Contact')
+@click.option('--total_amount', prompt="total_amout",type=Decimal, required=True, help='Total Amount')
+@click.option('--amount_due', prompt="amount_due", type=Decimal, required=True, help='Amount Due')
+@click.option('--status', prompt="Signed",type=bool, required=True, help='Status')
+def create_contract(client_id, commercial_contact, total_amount, amount_due, status):
+    """Create contract"""
+    create_contract_controller(client_id, commercial_contact, total_amount, amount_due, status)
+
 
 
 if __name__ == "__main__":
