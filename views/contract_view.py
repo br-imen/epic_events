@@ -8,3 +8,12 @@ def success_create_contract_view():
 def list_contracts_view(contracts):
     for contract in contracts:
         print(contract)
+
+def error_client_collaborator_not_found_view():
+    print("client or collaborator not found")
+
+def success_delete_contract_view():
+    print("Contract deleted")
+
+def error_contract_not_found_view():
+    print("Contract not found")

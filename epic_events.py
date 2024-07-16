@@ -1,5 +1,4 @@
-from datetime import datetime
-from decimal import Decimal
+from decimal import Decimal, InvalidOperation
 import click
 from controllers.client_controller import (
     create_client_controller,
@@ -14,7 +13,7 @@ from controllers.collaborator_controller import (
     delete_collaborator_controller,
     update_collaborator_controller,
 )
-from controllers.contract_controller import create_contract_controller
+from controllers.contract_controller import create_contract_controller, delete_contract_controller, list_contracts_controller
 
 
 @click.group()
@@ -225,19 +224,44 @@ def update_client(id, full_name, email, phone_number, company_name, contact_comm
         id, full_name, email, phone_number, company_name, contact_commercial
     )
 
+# Validation for contract
+class DecimalType(click.ParamType):
+    name = "decimal"
+
+    def convert(self, value, param, ctx):
+        try:
+            dec_value = Decimal(value)
+            if dec_value < 0:
+                self.fail(f"{value} is not a non-negative decimal", param, ctx)
+            return dec_value
+        except InvalidOperation:
+            self.fail(f"{value} is not a valid decimal", param, ctx)
+
+DECIMAL = DecimalType()
+
 
 # Create contract
 @cli.command()
 @click.option('--client_id', prompt="client id",type=int, required=True, help='Client ID')
 @click.option('--commercial_contact', prompt="commercial_contact", type=str, help='Commercial Contact')
-@click.option('--total_amount', prompt="total_amout",type=Decimal, required=True, help='Total Amount')
-@click.option('--amount_due', prompt="amount_due", type=Decimal, required=True, help='Amount Due')
+@click.option('--total_amount', prompt="total_amout",type=DECIMAL, required=True, help='Total Amount')
+@click.option('--amount_due', prompt="amount_due", type=DECIMAL, required=True, help='Amount Due')
 @click.option('--status', prompt="Signed",type=bool, required=True, help='Status')
 def create_contract(client_id, commercial_contact, total_amount, amount_due, status):
     """Create contract"""
     create_contract_controller(client_id, commercial_contact, total_amount, amount_due, status)
 
+# List contracts
+@cli.command()
+def list_contracts():
+    """List contracts"""
+    list_contracts_controller()
 
+@cli.command()
+@click.option('--contract-id', prompt="contract id",type=int, required=True, help='Contract ID')
+def delete_contract(contract_id):
+    """Delete contract"""
+    delete_contract_controller(contract_id)
 
 if __name__ == "__main__":
     cli()

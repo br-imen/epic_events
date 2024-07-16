@@ -37,6 +37,12 @@ class Contract(Base):
     @staticmethod
     def get_all(session):
         return session.query(Contract).all()
+    
+    def __str__(self):
+        return (f"Contract id={self.id}, client_id={self.client_id}, "
+                f"commercial_contact='{self.commercial_contact}', total_amount={self.total_amount}, "
+                f"amount_due={self.amount_due}, creation_date={self.creation_date}, "
+                f"status={'signed' if self.status else 'unsigned'}")
 
 
 Client.contracts = relationship(
