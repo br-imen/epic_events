@@ -9,6 +9,7 @@ class ClientInput(BaseModel):
     company_name: str
     contact_commercial: str
 
+
 class ClientInputUpdate(BaseModel):
     id = int
     full_name: str

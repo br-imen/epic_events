@@ -1,7 +1,11 @@
 from pydantic import ValidationError
 from models import Client, Collaborator
 from config.database import SessionLocal
-from controllers.client_validator import ClientDeleteInput, ClientInput, ClientInputUpdate
+from controllers.client_validator import (
+    ClientDeleteInput,
+    ClientInput,
+    ClientInputUpdate,
+)
 from views.client_view import (
     error_client_not_found_view,
     error_commercial_not_found_view,
@@ -27,6 +31,7 @@ def validate_delete_client_input(**kwargs):
         return user_input
     except ValidationError as e:
         validation_error_client_view(e)
+
 
 def validate_update_client(**kwargs):
     try:

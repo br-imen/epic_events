@@ -33,18 +33,20 @@ class Contract(Base):
         session.commit()
 
     @staticmethod
-    def get_by_id(contract_id,session):
+    def get_by_id(contract_id, session):
         return session.query(Contract).filter(Contract.id == contract_id).first()
 
     @staticmethod
     def get_all(session):
         return session.query(Contract).all()
-    
+
     def __str__(self):
-        return (f"Contract id={self.id}, client_id={self.client_id}, "
-                f"commercial_contact='{self.commercial_contact}', total_amount={self.total_amount}, "
-                f"amount_due={self.amount_due}, creation_date={self.creation_date}, "
-                f"status={'signed' if self.status else 'unsigned'}")
+        return (
+            f"Contract id={self.id}, client_id={self.client_id}, "
+            f"commercial_contact='{self.commercial_contact}', total_amount={self.total_amount}, "
+            f"amount_due={self.amount_due}, creation_date={self.creation_date}, "
+            f"status={'signed' if self.status else 'unsigned'}"
+        )
 
 
 Client.contracts = relationship(
