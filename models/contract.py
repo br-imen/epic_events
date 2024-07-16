@@ -22,7 +22,9 @@ class Contract(Base):
         session.add(self)
         session.commit()
 
-    def update(self, session):
+    def update(self, session, **kwargs):
+        for key, value in kwargs.items():
+            setattr(self, key, value)
         session.merge(self)
         session.commit()
 

@@ -8,6 +8,13 @@ class ContractInput(BaseModel):
     amount_due: Decimal
     status: bool
 
+class ContractUpdateInput(BaseModel):
+    id: int
+    client_id: int
+    commercial_contact: str
+    total_amount: Decimal
+    amount_due: Decimal
+    status: bool
 
 
 class ContractDeleteInput(BaseModel):

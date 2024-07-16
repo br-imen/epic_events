@@ -13,7 +13,7 @@ from controllers.collaborator_controller import (
     delete_collaborator_controller,
     update_collaborator_controller,
 )
-from controllers.contract_controller import create_contract_controller, delete_contract_controller, list_contracts_controller
+from controllers.contract_controller import create_contract_controller, delete_contract_controller, list_contracts_controller, update_contract_controller
 
 
 @click.group()
@@ -249,6 +249,8 @@ DECIMAL = DecimalType()
 @click.option('--status', prompt="Signed",type=bool, required=True, help='Status')
 def create_contract(client_id, commercial_contact, total_amount, amount_due, status):
     """Create contract"""
+    if amount_due > total_amount:
+        raise click.BadParameter('Amount due must be less than or equal to total amount.')
     create_contract_controller(client_id, commercial_contact, total_amount, amount_due, status)
 
 # List contracts
@@ -262,6 +264,20 @@ def list_contracts():
 def delete_contract(contract_id):
     """Delete contract"""
     delete_contract_controller(contract_id)
+
+
+@cli.command()
+@click.option('--id', prompt="contract id",type=int, required=True, help='Contract ID')
+@click.option('--client_id', prompt="client id",type=int, required=True, help='Client ID')
+@click.option('--commercial_contact', prompt="commercial_contact", type=str, help='Commercial Contact')
+@click.option('--total_amount', prompt="total_amout",type=DECIMAL, required=True, help='Total Amount')
+@click.option('--amount_due', prompt="amount_due", type=DECIMAL, required=True, help='Amount Due')
+@click.option('--status', prompt="Signed",type=bool, required=True, help='Status')
+def update_contract(id,client_id, commercial_contact, total_amount, amount_due, status):
+    """Update contract"""
+    if amount_due > total_amount:
+        raise click.BadParameter('Amount due must be less than or equal to total amount.')
+    update_contract_controller(id,client_id, commercial_contact, total_amount, amount_due, status)
 
 if __name__ == "__main__":
     cli()

@@ -1,7 +1,7 @@
 from pydantic import ValidationError
 from models import Client, Collaborator
 from config.database import SessionLocal
-from controllers.client_validator import ClientDeleteInput, ClientInput
+from controllers.client_validator import ClientDeleteInput, ClientInput, ClientInputUpdate
 from views.client_view import (
     error_client_not_found_view,
     error_commercial_not_found_view,
@@ -24,6 +24,13 @@ def validate_create_client(**kwargs):
 def validate_delete_client_input(**kwargs):
     try:
         user_input = ClientDeleteInput(**kwargs)
+        return user_input
+    except ValidationError as e:
+        validation_error_client_view(e)
+
+def validate_update_client(**kwargs):
+    try:
+        user_input = ClientInputUpdate(**kwargs)
         return user_input
     except ValidationError as e:
         validation_error_client_view(e)
@@ -65,7 +72,7 @@ def update_client_controller(
         "company_name": company_name,
         "contact_commercial": contact_commercial,
     }
-    validated_data = validate_create_client(**client_data)
+    validated_data = validate_update_client(**client_data)
     if validated_data:
         session = SessionLocal()
         try:
@@ -78,7 +85,7 @@ def update_client_controller(
                     client.update(session, **validated_data.dict())
                     success_update_client_view()
                 else:
-                    error_commercial_not_found_view()()
+                    error_commercial_not_found_view()
             else:
                 error_client_not_found_view()
         finally:

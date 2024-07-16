@@ -17,3 +17,7 @@ def success_delete_contract_view():
 
 def error_contract_not_found_view():
     print("Contract not found")
+
+def success_update_contract_view():
+    print("Contract updated")
+
