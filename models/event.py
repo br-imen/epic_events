@@ -1,5 +1,8 @@
 from sqlalchemy import Column, Integer, String, DateTime, ForeignKey
+from sqlalchemy.orm import relationship
 from config.database import Base
+from models.client import Client
+from models.collaborator import Collaborator
 
 
 class Event(Base):
@@ -10,10 +13,14 @@ class Event(Base):
     description = Column(String, nullable=False)
     date_start = Column(DateTime, nullable=False)
     date_end = Column(DateTime, nullable=False)
-    support_contact_name = Column(String, nullable=False)
+    collaborator_support_id = Column(Integer, ForeignKey('collaborators.id'))
     location = Column(String, nullable=False)
     attendees = Column(Integer, nullable=False)
     notes = Column(String, nullable=True)
+
+    client = relationship("Client", back_populates="events")
+    contract = relationship("Contract", back_populates="events")
+    collaborator_support = relationship("Collaborator", back_populates="events")
 
     def save(self, session):
         session.add(self)
@@ -45,7 +52,7 @@ class Event(Base):
             f"Description: {self.description}\n"
             f"Start Date: {self.date_start.strftime('%d-%m-%Y %I:%M %p')}\n"
             f"End Date: {self.date_end.strftime('%d-%m-%Y %I:%M %p')}\n"
-            f"Support Contact Name: {self.support_contact_name}\n"
+            f"Collaborator support id : {self.collaborator_support_id}\n"
             f"Location: {self.location}\n"
             f"Attendees: {self.attendees}\n"
             f"Notes: {self.notes if self.notes else 'None'}"

@@ -1,6 +1,8 @@
-from datetime import datetime
 from decimal import Decimal, InvalidOperation
 import click
+import re
+from pydantic import EmailStr
+from config.database import SessionLocal
 from controllers.client_controller import (
     create_client_controller,
     delete_client_controller,
@@ -26,11 +28,75 @@ from controllers.event_controller import (
     list_events_controller,
     update_event_controller,
 )
+from config.auth import has_permission, is_authenticated
 
+# Create a custom Click context to store the subcommand name
+class CustomContext(click.Context):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.subcommand = None
 
-@click.group()
+class AuthGroup(click.Group):
+
+    def invoke(self, ctx):
+        session = SessionLocal()
+        ctx.invoked_subcommand = ctx.protected_args[0] if ctx.protected_args else None
+        print(f"Invoked subcommand: {ctx.invoked_subcommand}")
+        if ctx.invoked_subcommand != "login":
+            if not is_authenticated():
+                print("Authentication required. Exiting.")
+                exit(1)
+            if not has_permission(command=ctx.invoked_subcommand, session=session):
+                print("Permission denied.")
+                exit(1)
+        super().invoke(ctx)
+        
+@click.group(cls=AuthGroup)
 def cli():
     pass
+
+# Validate email
+def validate_email(ctx, param, value):
+    # Simple regex for validating an email address
+    if not re.match(r'^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$', value):
+        raise click.BadParameter('Invalid email address format')
+    return value
+
+# Validate_phone_number
+def validate_phone_number(ctx, param, value):
+    if not re.match(r'^(\+33|0)\d{9}$', value):
+        raise click.BadParameter('Invalid phone number format')
+    return value
+
+
+# Validation for contract
+class DecimalType(click.ParamType):
+    name = "decimal"
+
+    def convert(self, value, param, ctx):
+        try:
+            dec_value = Decimal(value)
+            if dec_value < 0:
+                self.fail(f"{value} is not a non-negative decimal", param, ctx)
+            return dec_value
+        except InvalidOperation:
+            self.fail(f"{value} is not a valid decimal", param, ctx)
+
+
+DECIMAL = DecimalType()
+
+
+# Validate bool input status:
+def validate_boolean(ctx, param, value):
+    if isinstance(value, str):
+        value = value.lower()
+        if value in ['true', 't', 'yes', 'y', '1']:
+            return True
+        elif value in ['false', 'f', 'no', 'n', '0']:
+            return False
+        else:
+            raise click.BadParameter('Boolean value must be true/false, yes/no, t/f, y/n, or 1/0')
+    return value
 
 
 # Create collaborator
@@ -42,7 +108,7 @@ def cli():
 )
 @click.option("--name", type=str, prompt="Name", help="The name of the collaborator.")
 @click.option(
-    "--email", type=str, prompt="Email", help="The email of the collaborator."
+    "--email", type=EmailStr, callback=validate_email, prompt="Email", help="The email of the collaborator."
 )
 @click.option(
     "--role-id", type=int, prompt="Role ID", help="The role ID of the collaborator."
@@ -58,10 +124,9 @@ def create_collaborator(employee_number, name, email, role_id, password):
     """Create collaborator"""
     create_collaborator_controller(employee_number, name, email, role_id, password)
 
-
 # Login
 @cli.command()
-@click.option("--email", type=str, prompt="Email", help="The email of the user.")
+@click.option("--email", type=str, prompt="Email", callback=validate_email, help="The email of the user.")
 @click.option(
     "--password",
     prompt=True,
@@ -76,7 +141,7 @@ def login(email, password):
 
 # List_collaborators
 @cli.command()
-def list_of_collaborators():
+def list_collaborators():
     """List collaborators"""
     list_collaborators_controller()
 
@@ -104,7 +169,7 @@ def delete_collaborator(employee_number):
 )
 @click.option("--name", type=str, prompt="Name", help="The name of the collaborator.")
 @click.option(
-    "--email", type=str, prompt="Email", help="The email of the collaborator."
+    "--email", type=str, prompt="Email", callback=validate_email, help="The email of the collaborator."
 )
 @click.option(
     "--role-id", type=int, prompt="Role ID", help="The role ID of the collaborator."
@@ -134,6 +199,7 @@ def update_collaborator(employee_number, name, email, role_id, password):
     "--email",
     type=str,
     prompt="Email",
+    callback=validate_email,
     required=True,
     help="Email address of the contact",
 )
@@ -141,6 +207,7 @@ def update_collaborator(employee_number, name, email, role_id, password):
     "--phone-number",
     type=str,
     prompt="Phone number",
+    callback=validate_phone_number,
     required=True,
     help="Phone number of the contact",
 )
@@ -152,16 +219,16 @@ def update_collaborator(employee_number, name, email, role_id, password):
     help="Company name of the contact",
 )
 @click.option(
-    "--contact-commercial",
-    type=str,
-    prompt="Contact commercial",
+    "--commercial_collaborator_id",
+    type=int,
+    prompt="commercial_id",
     required=True,
-    help="Commercial contact person",
+    help="Commercial id",
 )
-def create_client(full_name, email, phone_number, company_name, contact_commercial):
+def create_client(full_name, email, phone_number, company_name, commercial_collaborator_id):
     """Create client"""
     create_client_controller(
-        full_name, email, phone_number, company_name, contact_commercial
+        full_name, email, phone_number, company_name, commercial_collaborator_id
     )
 
 
@@ -206,6 +273,7 @@ def delete_client(client_id):
     "--email",
     type=str,
     prompt="Email",
+    callback=validate_email,
     required=True,
     help="Email address of the contact",
 )
@@ -213,6 +281,7 @@ def delete_client(client_id):
     "--phone-number",
     type=str,
     prompt="Phone number",
+    callback=validate_phone_number,
     required=True,
     help="Phone number of the contact",
 )
@@ -224,34 +293,17 @@ def delete_client(client_id):
     help="Company name of the contact",
 )
 @click.option(
-    "--contact-commercial",
-    type=str,
-    prompt="Contact commercial",
+    "--commercial_collaborator_id",
+    type=int,
+    prompt="commercial_id",
     required=True,
-    help="Commercial contact person",
+    help="Commercial id",
 )
-def update_client(id, full_name, email, phone_number, company_name, contact_commercial):
+def update_client(id, full_name, email, phone_number, company_name, commercial_collaborator_id):
     """Update client"""
     update_client_controller(
-        id, full_name, email, phone_number, company_name, contact_commercial
+        id, full_name, email, phone_number, company_name, commercial_collaborator_id
     )
-
-
-# Validation for contract
-class DecimalType(click.ParamType):
-    name = "decimal"
-
-    def convert(self, value, param, ctx):
-        try:
-            dec_value = Decimal(value)
-            if dec_value < 0:
-                self.fail(f"{value} is not a non-negative decimal", param, ctx)
-            return dec_value
-        except InvalidOperation:
-            self.fail(f"{value} is not a valid decimal", param, ctx)
-
-
-DECIMAL = DecimalType()
 
 
 # Create contract
@@ -260,10 +312,10 @@ DECIMAL = DecimalType()
     "--client_id", prompt="client id", type=int, required=True, help="Client ID"
 )
 @click.option(
-    "--commercial_contact",
-    prompt="commercial_contact",
-    type=str,
-    help="Commercial Contact",
+    "--commercial_collaborator_id",
+    prompt="commercial_collaborator_id",
+    type=int,
+    help="Commercial id",
 )
 @click.option(
     "--total_amount",
@@ -275,15 +327,15 @@ DECIMAL = DecimalType()
 @click.option(
     "--amount_due", prompt="amount_due", type=DECIMAL, required=True, help="Amount Due"
 )
-@click.option("--status", prompt="Signed", type=bool, required=True, help="Status")
-def create_contract(client_id, commercial_contact, total_amount, amount_due, status):
+@click.option("--status", prompt="is signed", type=bool, callback=validate_boolean, required=True, help="Status signed or not")
+def create_contract(client_id, commercial_collaborator_id, total_amount, amount_due, status):
     """Create contract"""
     if amount_due > total_amount:
         raise click.BadParameter(
             "Amount due must be less than or equal to total amount."
         )
     create_contract_controller(
-        client_id, commercial_contact, total_amount, amount_due, status
+        client_id, commercial_collaborator_id, total_amount, amount_due, status
     )
 
 
@@ -310,10 +362,10 @@ def delete_contract(contract_id):
     "--client_id", prompt="client id", type=int, required=True, help="Client ID"
 )
 @click.option(
-    "--commercial_contact",
-    prompt="commercial_contact",
-    type=str,
-    help="Commercial Contact",
+    "--commercial_collaborator_id",
+    prompt="commercial_collaborator_id",
+    type=int,
+    help="Commercial id",
 )
 @click.option(
     "--total_amount",
@@ -325,9 +377,9 @@ def delete_contract(contract_id):
 @click.option(
     "--amount_due", prompt="amount_due", type=DECIMAL, required=True, help="Amount Due"
 )
-@click.option("--status", prompt="Signed", type=bool, required=True, help="Status")
+@click.option("--status", prompt="is signed", type=bool, required=True, help="Status")
 def update_contract(
-    id, client_id, commercial_contact, total_amount, amount_due, status
+    id, client_id, commercial_collaborator_id, total_amount, amount_due, status
 ):
     """Update contract"""
     if amount_due > total_amount:
@@ -335,7 +387,7 @@ def update_contract(
             "Amount due must be less than or equal to total amount."
         )
     update_contract_controller(
-        id, client_id, commercial_contact, total_amount, amount_due, status
+        id, client_id, commercial_collaborator_id, total_amount, amount_due, status
     )
 
 
@@ -368,19 +420,13 @@ def update_contract(
     required=True,
     help="End date and time",
 )
-@click.option(
-    "--support_contact_name",
-    prompt="Support Contact Name",
-    type=str,
-    required=True,
-    help="Name of the support contact",
-)
+@click.option("--collaborator_support_id", prompt="Support id ",type=int,required=True,help="Support ID")
 @click.option(
     "--location",
     prompt="Location",
     type=str,
     required=True,
-    help="Location of the event",
+    help="Location of the event"
 )
 @click.option(
     "--attendees",
@@ -398,7 +444,7 @@ def create_event(
     description,
     date_start,
     date_end,
-    support_contact_name,
+    collaborator_support_id,
     location,
     attendees,
     notes,
@@ -410,7 +456,7 @@ def create_event(
         "description": description,
         "date_start":date_start ,
         "date_end": date_end,
-        "support_contact_name": support_contact_name,
+        "collaborator_support_id": collaborator_support_id,
         "location": location,
         "attendees": attendees,
         "notes": notes,
@@ -439,10 +485,10 @@ def create_event(
     help="End date and time (YYYY-MM-DD HH:MM:SS)",
 )
 @click.option(
-    "--support_contact_name",
-    type=str, prompt="support contact name",
+    "--collaborator_support_id",
+    type=int, prompt="support contact id",
     required=False,
-    help="Name of the support contact",
+    help="support id",
 )
 @click.option("--location", type=str, prompt="location",required=False, help="Location of the event")
 @click.option("--attendees", type=int, prompt="attendees",required=False, help="Number of attendees")
@@ -454,7 +500,7 @@ def update_event(
     description,
     date_start,
     date_end,
-    support_contact_name,
+    collaborator_support_id ,
     location,
     attendees,
     notes,
@@ -467,7 +513,7 @@ def update_event(
         "description": description,
         "date_start": date_start,
         "date_end": date_end,
-        "support_contact_name": support_contact_name,
+        "collaborator_support_id ": collaborator_support_id ,
         "location": location,
         "attendees": attendees,
         "notes": notes,

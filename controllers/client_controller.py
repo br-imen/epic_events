@@ -42,20 +42,20 @@ def validate_update_client(**kwargs):
 
 
 def create_client_controller(
-    full_name, email, phone_number, company_name, contact_commercial
+    full_name, email, phone_number, company_name, commercial_collaborator_id
 ):
     client_data = {
         "full_name": full_name,
         "email": email,
         "phone_number": phone_number,
         "company_name": company_name,
-        "contact_commercial": contact_commercial,
+        "commercial_collaborator_id": commercial_collaborator_id,
     }
     validated_data = validate_create_client(**client_data)
     if validated_data:
         session = SessionLocal()
         try:
-            found_commercial = Collaborator.get_by_name(contact_commercial, session)
+            found_commercial = Collaborator.get_by_id(commercial_collaborator_id, session)
             if found_commercial:
                 new_client = Client(**validated_data.dict())
                 new_client.save(session)
@@ -67,7 +67,7 @@ def create_client_controller(
 
 
 def update_client_controller(
-    id, full_name, email, phone_number, company_name, contact_commercial
+    id, full_name, email, phone_number, company_name, commercial_collaborator_id
 ):
     client_data = {
         "id": id,
@@ -75,7 +75,7 @@ def update_client_controller(
         "email": email,
         "phone_number": phone_number,
         "company_name": company_name,
-        "contact_commercial": contact_commercial,
+        "commercial_collaborator_id": commercial_collaborator_id,
     }
     validated_data = validate_update_client(**client_data)
     if validated_data:
@@ -83,8 +83,8 @@ def update_client_controller(
         try:
             client = Client.get_by_id(id, session)
             if client:
-                collaborator = Collaborator.get_by_name(
-                    contact_commercial, session=session
+                collaborator = Collaborator.get_by_id(
+                    commercial_collaborator_id, session=session
                 )
                 if collaborator:
                     client.update(session, **validated_data.dict())

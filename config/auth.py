@@ -4,6 +4,8 @@ import jwt
 from datetime import datetime, timedelta, timezone
 from typing import Optional
 
+from models.collaborator import Collaborator
+
 
 SECRET_KEY = "your_secret_key"
 ALGORITHM = "HS256"
@@ -83,22 +85,69 @@ def is_token_expired(token, secret_key):
 
 
 # Decorator to check the use is authenticated
-def is_authenticated(secret_key):
-    def decorator(func):
-        @wraps(func)
-        def wrapper(*args, **kwargs):
-            try:
-                token = get_token_from_file()
-            except FileNotFoundError:
-                print("Token file not found.")
-                return False
+def is_authenticated_decorator(func):
+    @wraps(func)
+    def wrapper(*args, **kwargs):
+        print("***********")
+        try:
+            token = get_token_from_file()
+        except FileNotFoundError:
+            print("Token file not found.")
+            return False
 
-            if is_token_expired(token, secret_key):
-                print("Token has expired.")
-                return False
+        if is_token_expired(token, SECRET_KEY):
+            print("Token has expired.")
+            return False
+        return func(*args, **kwargs)
 
-            return func(*args, **kwargs)
+    return wrapper
 
-        return wrapper
+def is_authenticated():
+    try:
+        token = get_token_from_file()
+    except FileNotFoundError:
+        print("Token file not found.")
+        return False
 
-    return decorator
+    if is_token_expired(token, SECRET_KEY):
+        print("Token has expired.")
+        return False
+    return True
+
+
+def has_permission(command, session):
+    token = get_token_from_file()
+    email = get_email_from_access_token(token)
+    collaborator = Collaborator.get_by_email(email=email, session=session)
+    role = collaborator.role
+    permissions = role.permissions
+    print(command)
+    permissions_names = [str(permission) for permission in permissions]
+    print(permissions_names)
+    if command in permissions_names:
+        return True
+    return False
+
+# def has_role(roles):
+#     def decorator(func):
+#         @wraps(func)
+#         def wrapper(*args, **kwargs):
+#             try:
+#                 token = get_token_from_file()
+#             except FileNotFoundError:
+#                 print("Token file not found.")
+#                 return False
+#             if is_token_expired(token, SECRET_KEY):
+#                 print("Token has expired.")
+#                 return False
+
+#             payload = jwt.decode(token, SECRET_KEY, algorithms=["HS256"])
+#             user_role = payload.get("role")
+#             if user_role not in roles:
+#                 print("You do not have permission to perform this action.")
+#                 return False
+
+#             return func(*args, **kwargs)
+#         return wrapper
+#     return decorator
+

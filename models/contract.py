@@ -3,6 +3,7 @@ from sqlalchemy.orm import relationship
 from datetime import datetime
 from config.database import Base
 from models.client import Client
+from models.collaborator import Collaborator
 
 
 class Contract(Base):
@@ -10,13 +11,14 @@ class Contract(Base):
 
     id = Column(Integer, primary_key=True, index=True)
     client_id = Column(Integer, ForeignKey("clients.id"), nullable=False)
-    commercial_contact = Column(String(100), nullable=True)
+    commercial_collaborator_id = Column(Integer, ForeignKey('collaborators.id'))
     total_amount = Column(Numeric, nullable=False)
     amount_due = Column(Numeric, nullable=False)
     creation_date = Column(Date, default=datetime.utcnow)
     status = Column(Boolean, nullable=False)
-
     client = relationship("Client", back_populates="contracts")
+    collaborator = relationship("Collaborator", back_populates="contracts")
+    events = relationship("Event", order_by="Event.id", back_populates="contract")
 
     def save(self, session):
         session.add(self)
@@ -43,12 +45,8 @@ class Contract(Base):
     def __str__(self):
         return (
             f"Contract id={self.id}, client_id={self.client_id}, "
-            f"commercial_contact='{self.commercial_contact}', total_amount={self.total_amount}, "
+            f"commercial_id='{self.commercial_collaborator_id}', total_amount={self.total_amount}, "
             f"amount_due={self.amount_due}, creation_date={self.creation_date}, "
             f"status={'signed' if self.status else 'unsigned'}"
         )
 
-
-Client.contracts = relationship(
-    "Contract", order_by=Contract.id, back_populates="client"
-)

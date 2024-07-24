@@ -44,12 +44,12 @@ def validate_update_contract_input(**kwargs):
 
 
 def create_contract_controller(
-    client_id, commercial_contact, total_amount, amount_due, status
+    client_id, commercial_collaborator_id, total_amount, amount_due, status
 ):
 
     contract_data = {
         "client_id": client_id,
-        "commercial_contact": commercial_contact,
+        "commercial_collaborator_id": commercial_collaborator_id,
         "total_amount": total_amount,
         "amount_due": amount_due,
         "status": status,
@@ -58,7 +58,7 @@ def create_contract_controller(
     if validate_data:
         session = SessionLocal()
         try:
-            find_commercial = Collaborator.get_by_name(commercial_contact, session)
+            find_commercial = Collaborator.get_by_id(commercial_collaborator_id, session)
             find_client = Client.get_by_id(client_id, session)
             if find_client and find_commercial:
                 contract = Contract(**contract_data)
@@ -96,12 +96,12 @@ def delete_contract_controller(contract_id):
 
 
 def update_contract_controller(
-    id, client_id, commercial_contact, total_amount, amount_due, status
+    id, client_id, commercial_collaborator_id, total_amount, amount_due, status
 ):
     contract_data = {
         "id": id,
         "client_id": client_id,
-        "commercial_contact": commercial_contact,
+        "commercial_collaborator_id": commercial_collaborator_id,
         "total_amount": total_amount,
         "amount_due": amount_due,
         "status": status,
@@ -113,7 +113,7 @@ def update_contract_controller(
             contract = Contract.get_by_id(id, session=session)
             if contract:
                 found_client = Client.get_by_id(client_id, session)
-                found_commercial = Collaborator.get_by_name(commercial_contact, session)
+                found_commercial = Collaborator.get_by_id(commercial_collaborator_id, session)
 
                 if found_client and found_commercial:
                     contract.update(session, **validated_data.dict())

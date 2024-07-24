@@ -2,7 +2,8 @@ import enum
 import bcrypt
 from sqlalchemy import Column, Integer, String, ForeignKey, Table, Enum as SqlEnum
 from sqlalchemy.orm import relationship
-from config.database import SessionLocal, Base
+from sqlalchemy.exc import IntegrityError
+from config.database import Base
 
 
 class RoleEnum(enum.Enum):
@@ -24,7 +25,8 @@ class Role(Base):
     __tablename__ = "roles"
 
     id = Column(Integer, primary_key=True)
-    name = Column(SqlEnum(RoleEnum), nullable=False)
+    name = Column(SqlEnum(RoleEnum), nullable=False, unique=True)
+    collaborators = relationship('Collaborator', back_populates='role')
 
     permissions = relationship(
         "Permission", secondary=role_permissions, back_populates="roles"
@@ -33,6 +35,20 @@ class Role(Base):
     def save(self, session):
         session.add(self)
         session.commit()
+
+    @classmethod
+    def get_or_create(cls, session, name):
+        instance = session.query(cls).filter_by(name=name).first()
+        if instance:
+            return instance
+        instance = cls(name=name)
+        session.add(instance)
+        try:
+            session.commit()
+        except IntegrityError:
+            session.rollback()
+            instance = session.query(cls).filter_by(name=name).first()
+        return instance
 
 
 class Permission(Base):
@@ -44,16 +60,40 @@ class Permission(Base):
         "Role", secondary=role_permissions, back_populates="permissions"
     )
 
+    def save(self, session):
+        session.add(self)
+        session.commit()
+
+    @classmethod
+    def get_or_create(cls, session, name):
+        instance = session.query(cls).filter_by(name=name).first()
+        if instance:
+            return instance
+        instance = cls(name=name)
+        session.add(instance)
+        try:
+            session.commit()
+        except IntegrityError:
+            session.rollback()
+            instance = session.query(cls).filter_by(name=name).first()
+        return instance
+    
+    def __str__(self) -> str:
+        return self.name
+
 
 class Collaborator(Base):
     __tablename__ = "collaborators"
-
     id = Column(Integer, primary_key=True)
     employee_number = Column(Integer, index=True, unique=True)
     name = Column(String(100), nullable=False)
     email = Column(String, nullable=False, unique=True)
     role_id = Column(Integer, ForeignKey("roles.id"), nullable=False)
     password = Column(String, nullable=False)
+    contracts = relationship("Contract", back_populates="collaborator")
+    events = relationship("Event", order_by="Event.id", back_populates="collaborator_support")
+    clients = relationship("Client", back_populates="collaborator")
+    role = relationship('Role', back_populates='collaborators')
 
     def set_password(self, password):
         self.password = bcrypt.hashpw(
@@ -90,20 +130,26 @@ class Collaborator(Base):
         )
 
     @staticmethod
-    def get_by_id(employee_number, session):
+    def get_by_id(id, session):
         return (
             session.query(Collaborator)
-            .filter(Collaborator.employee_number == employee_number)
-            .first()
+            .filter(Collaborator.id == id).first()
         )
-
+    
+    @staticmethod
+    def get_by_employee_number(employee_number, session):
+        return (
+            session.query(Collaborator)
+            .filter(Collaborator.employee_number == employee_number).first()
+        )
+    
     @staticmethod
     def get_by_email(email, session):
         return session.query(Collaborator).filter(Collaborator.email == email).first()
 
-    @staticmethod
-    def get_by_name(name, session):
-        return session.query(Collaborator).filter(Collaborator.name == name).first()
+    #@staticmethod
+    #def get_by_name(name, session):
+        #return session.query(Collaborator).filter(Collaborator.name == name).first()
 
     @staticmethod
     def get_all(session):

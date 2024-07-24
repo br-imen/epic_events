@@ -1,5 +1,5 @@
 from pydantic import ValidationError
-from config.auth import create_access_token
+from config.auth import create_access_token, is_authenticated
 from controllers.collaborator_validator import (
     LoginInput,
     CollaboratorInput,
@@ -56,6 +56,7 @@ def create_collaborator_controller(employee_number, name, email, role_id, passwo
         session = SessionLocal()
         try:
             new_collaborator = Collaborator(**validated_data.dict())
+            print(new_collaborator.role)
             new_collaborator.save(session)
             success_create_collaborator_view()
         finally:
@@ -74,7 +75,7 @@ def update_collaborator_controller(employee_number, name, email, role_id, passwo
     if validated_data:
         session = SessionLocal()
         try:
-            collaborator = Collaborator.get_by_id(
+            collaborator = Collaborator.get_by_employee_number(
                 employee_number=employee_number, session=session
             )
             if collaborator:
@@ -91,9 +92,9 @@ def delete_collaborator_controller(employee_number):
     data = {"employee_number": employee_number}
     validated_data = validate_delete_collaborator_input(**data)
     if validated_data:
+        session = SessionLocal()
         try:
-            session = SessionLocal()
-            collaborator = Collaborator.get_by_id(employee_number, session)
+            collaborator = Collaborator.get_by_employee_number(employee_number, session)
             if collaborator:
                 collaborator.delete(session)
                 success_delete_collaborator_view()
@@ -121,7 +122,7 @@ def authentication(email, password):
         try:
             collaborator = Collaborator.get_by_email(email, session)
             if collaborator and collaborator.verify_password(password):
-                access_token = create_access_token(data={"sub": collaborator.email})
+                access_token = create_access_token(data={"sub": collaborator.email, "role_id": collaborator.role_id})
                 success_login_view()
                 return {"access_token": access_token, "token_type": "bearer"}
             else:

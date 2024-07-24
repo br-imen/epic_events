@@ -46,7 +46,7 @@ def create_event_controller(
     description,
     date_start,
     date_end,
-    support_contact_name,
+    collaborator_support_id,
     location,
     attendees,
     notes,
@@ -57,7 +57,7 @@ def create_event_controller(
         "description": description,
         "date_start": date_start,
         "date_end": date_end,
-        "support_contact_name": support_contact_name,
+        "collaborator_support_id": collaborator_support_id ,
         "location": location,
         "attendees": attendees,
         "notes": notes,
@@ -66,7 +66,7 @@ def create_event_controller(
     if validated_data:
         session = SessionLocal()
         try:
-            found_support = Collaborator.get_by_name(support_contact_name, session)
+            found_support = Collaborator.get_by_id(collaborator_support_id , session)
             found_contract = Contract.get_by_id(contract_id,session)
             found_client = Client.get_by_id(client_id,session)
             if found_support and found_contract and found_client:
@@ -86,7 +86,7 @@ def update_event_controller(
     description,
     date_start,
     date_end,
-    support_contact_name,
+    collaborator_support_id ,
     location,
     attendees,
     notes,
@@ -98,7 +98,7 @@ def update_event_controller(
         "description": description,
         "date_start": date_start,
         "date_end": date_end,
-        "support_contact_name": support_contact_name,
+        "collaborator_support_id ": collaborator_support_id ,
         "location": location,
         "attendees": attendees,
         "notes": notes,
@@ -109,8 +109,8 @@ def update_event_controller(
         try:
             event = Event.get_by_id(id, session)
             if event:
-                collaborator = Collaborator.get_by_name(
-                    support_contact_name, session=session
+                collaborator = Collaborator.get_by_id(
+                    collaborator_support_id , session=session
                 )
                 client = Client.get_by_id(client_id, session)
                 contract = Contract.get_by_id(contract_id,session)
