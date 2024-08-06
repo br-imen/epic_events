@@ -22,6 +22,5 @@ def error_event_not_found_view():
 def error_contact_client_support_not_found_view():
     print("contract or client or support not found")
 
-
 def success_update_event_view():
     print("event updated")

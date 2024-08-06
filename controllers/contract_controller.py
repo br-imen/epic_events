@@ -58,22 +58,17 @@ def create_contract_controller(
     if validate_data:
         session = SessionLocal()
         try:
-            find_commercial = Collaborator.get_by_id(commercial_collaborator_id, session)
-            find_client = Client.get_by_id(client_id, session)
-            if find_client and find_commercial:
-                contract = Contract(**contract_data)
-                contract.save(session)
-                success_create_contract_view()
-            else:
-                error_client_collaborator_not_found_view()
+            contract = Contract(**contract_data)
+            contract.save(session)
+            success_create_contract_view()
         finally:
             session.close()
 
 
-def list_contracts_controller():
+def list_contracts_controller(filters):
     session = SessionLocal()
     try:
-        contracts = Contract.get_all(session)
+        contracts = Contract.get_all(session, filters)
         return list_contracts_view(contracts)
     finally:
         session.close()

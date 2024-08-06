@@ -7,8 +7,7 @@ class ClientInput(BaseModel):
     email: EmailStr
     phone_number: str
     company_name: str
-    commercial_collaborator_id : int
-
+    commercial_collaborator_id: str
 
 class ClientInputUpdate(BaseModel):
     id = int
@@ -16,8 +15,6 @@ class ClientInputUpdate(BaseModel):
     email: EmailStr
     phone_number: str
     company_name: str
-    commercial_collaborator_id : int
-
 
 class ClientDeleteInput(BaseModel):
     client_id: int

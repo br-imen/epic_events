@@ -36,6 +36,10 @@ class Role(Base):
         session.add(self)
         session.commit()
 
+    @staticmethod
+    def get_by_id(id, session):
+        return session.query(Role).filter(Role.id == id).first()
+    
     @classmethod
     def get_or_create(cls, session, name):
         instance = session.query(cls).filter_by(name=name).first()
@@ -50,6 +54,8 @@ class Role(Base):
             instance = session.query(cls).filter_by(name=name).first()
         return instance
 
+    def __str__(self) -> str:
+        return self.name.value
 
 class Permission(Base):
     __tablename__ = "permissions"

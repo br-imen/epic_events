@@ -53,3 +53,5 @@ class Client(Base):
             f"Company: {self.company_name}, Created: {self.creation_date}, "
             f"Last Contact: {self.last_contact}, Commercial id: {self.commercial_collaborator_id}"
         )
+    
+    

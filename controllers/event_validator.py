@@ -9,7 +9,7 @@ class EventInput(BaseModel):
     description: str
     date_start: datetime
     date_end: datetime
-    collaborator_support_id : int
+    collaborator_support_id: Optional[int] = None
     location: str
     attendees: int
     notes: Optional[str] = None

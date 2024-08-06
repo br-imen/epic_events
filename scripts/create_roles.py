@@ -4,7 +4,8 @@ import os
 # Add the project root directory to sys.path
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
-from config.database import SessionLocal, ROLES_PERMISSIONS
+from config.database import SessionLocal
+from config.permissions import ROLES_PERMISSIONS
 from models.collaborator import Permission, Role
 
 def main():

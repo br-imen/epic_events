@@ -1,8 +1,6 @@
 from sqlalchemy import Column, Integer, String, DateTime, ForeignKey
 from sqlalchemy.orm import relationship
 from config.database import Base
-from models.client import Client
-from models.collaborator import Collaborator
 
 
 class Event(Base):
@@ -13,7 +11,7 @@ class Event(Base):
     description = Column(String, nullable=False)
     date_start = Column(DateTime, nullable=False)
     date_end = Column(DateTime, nullable=False)
-    collaborator_support_id = Column(Integer, ForeignKey('collaborators.id'))
+    collaborator_support_id = Column(Integer, ForeignKey('collaborators.id'), nullable=False)
     location = Column(String, nullable=False)
     attendees = Column(Integer, nullable=False)
     notes = Column(String, nullable=True)
@@ -28,7 +26,8 @@ class Event(Base):
 
     def update(self, session, **kwargs):
         for key, value in kwargs.items():
-            setattr(self, key, value)
+            if value:
+                setattr(self, key, value)
         session.merge(self)
         session.commit()
 
@@ -37,8 +36,13 @@ class Event(Base):
         session.commit()
 
     @staticmethod
-    def get_all(session):
-        return session.query(Event).all()
+    def get_all(session, filters, login_collaborator):
+        events = session.query(Event)
+        if "with_no_support" in filters:
+            events = events.filter(Event.collaborator_support_id is None)
+        if "assigned_to_me" in filters:
+            events = events.filter(Event.collaborator_support_id == login_collaborator.id)
+        return events.all()
     
     @staticmethod
     def get_by_id(event_id,session):

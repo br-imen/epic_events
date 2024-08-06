@@ -1,4 +1,5 @@
 from pydantic import ValidationError
+from config.auth import get_login_collaborator
 from models import Client, Collaborator
 from config.database import SessionLocal
 from controllers.client_validator import (
@@ -42,8 +43,13 @@ def validate_update_client(**kwargs):
 
 
 def create_client_controller(
-    full_name, email, phone_number, company_name, commercial_collaborator_id
+    full_name, email, phone_number, company_name
 ):
+    session = SessionLocal()
+    collaborator = get_login_collaborator(session=session)
+    commercial_collaborator_id = collaborator.id
+    print("************")
+    print(commercial_collaborator_id)
     client_data = {
         "full_name": full_name,
         "email": email,
@@ -53,7 +59,6 @@ def create_client_controller(
     }
     validated_data = validate_create_client(**client_data)
     if validated_data:
-        session = SessionLocal()
         try:
             found_commercial = Collaborator.get_by_id(commercial_collaborator_id, session)
             if found_commercial:
@@ -67,30 +72,28 @@ def create_client_controller(
 
 
 def update_client_controller(
-    id, full_name, email, phone_number, company_name, commercial_collaborator_id
+    id, full_name, email, phone_number, company_name
 ):
+    session = SessionLocal()
+    login_collaborator = get_login_collaborator(session=session)
+    login_collaborator_id = login_collaborator.id
     client_data = {
         "id": id,
         "full_name": full_name,
         "email": email,
         "phone_number": phone_number,
         "company_name": company_name,
-        "commercial_collaborator_id": commercial_collaborator_id,
     }
     validated_data = validate_update_client(**client_data)
     if validated_data:
-        session = SessionLocal()
         try:
             client = Client.get_by_id(id, session)
             if client:
-                collaborator = Collaborator.get_by_id(
-                    commercial_collaborator_id, session=session
-                )
-                if collaborator:
-                    client.update(session, **validated_data.dict())
-                    success_update_client_view()
-                else:
-                    error_commercial_not_found_view()
+                if login_collaborator_id != client.commercial_collaborator_id:
+                    print("Permission denied.")
+                    exit(1)
+                client.update(session, **validated_data.dict())
+                success_update_client_view()
             else:
                 error_client_not_found_view()
         finally:
@@ -100,11 +103,17 @@ def update_client_controller(
 def delete_client_controller(client_id):
     data = {"client_id": client_id}
     validated_data = validate_delete_client_input(**data)
+    session = SessionLocal()
+    login_collaborator = get_login_collaborator(session=session)
+    login_collaborator_id = login_collaborator.id
     if validated_data:
         try:
             session = SessionLocal()
             client = Client.get_by_id(client_id, session)
             if client:
+                if login_collaborator_id != client.commercial_collaborator_id:
+                    print("Permission denied.")
+                    exit(1)
                 client.delete(session)
                 success_delete_client_view()
             else:
