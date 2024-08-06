@@ -1,9 +1,8 @@
-from pydantic import ValidationError
 from config.database import SessionLocal
-from controllers.contract_validator import (
-    ContractDeleteInput,
-    ContractInput,
-    ContractUpdateInput,
+from validators.contract_validator import (
+    validate_create_contract_input,
+    validate_delete_contract_input,
+    validate_update_contract_input,
 )
 from models.client import Client
 from models.collaborator import Collaborator
@@ -15,32 +14,7 @@ from views.contract_view import (
     success_create_contract_view,
     success_delete_contract_view,
     success_update_contract_view,
-    validation_error_contract_view,
 )
-
-
-def validate_create_contract_input(**kwargs):
-    try:
-        user_input = ContractInput(**kwargs)
-        return user_input
-    except ValidationError as e:
-        validation_error_contract_view(e)
-
-
-def validate_delete_contract_input(**kwargs):
-    try:
-        user_input = ContractDeleteInput(**kwargs)
-        return user_input
-    except ValidationError as e:
-        validation_error_contract_view(e)
-
-
-def validate_update_contract_input(**kwargs):
-    try:
-        user_input = ContractUpdateInput(**kwargs)
-        return user_input
-    except ValidationError as e:
-        validation_error_contract_view(e)
 
 
 def create_contract_controller(

@@ -1,9 +1,8 @@
-from pydantic import ValidationError
-from config.auth import create_access_token, is_authenticated
-from controllers.collaborator_validator import (
-    LoginInput,
-    CollaboratorInput,
-    DeleteCollaboratorInput,
+from config.auth import create_access_token
+from validators.collaborator_validator import (
+    validate_collaborator_input,
+    validate_delete_collaborator_input,
+    validate_login_input,
 )
 from models.collaborator import Collaborator
 from views.collaborator_view import (
@@ -13,34 +12,9 @@ from views.collaborator_view import (
     success_create_collaborator_view,
     error_invalid_email_password_view,
     success_update_collaborator_view,
-    validation_error_view,
     list_collaborators_view,
 )
 from config.database import SessionLocal
-
-
-def validate_login_input(**kwargs):
-    try:
-        user_input = LoginInput(**kwargs)
-        return user_input
-    except ValidationError as e:
-        validation_error_view(e)
-
-
-def validate_collaborator_input(**kwargs):
-    try:
-        user_input = CollaboratorInput(**kwargs)
-        return user_input
-    except ValidationError as e:
-        validation_error_view(e)
-
-
-def validate_delete_collaborator_input(**kwargs):
-    try:
-        user_input = DeleteCollaboratorInput(**kwargs)
-        return user_input
-    except ValidationError as e:
-        validation_error_view(e)
 
 
 def create_collaborator_controller(employee_number, name, email, role_id, password):

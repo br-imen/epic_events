@@ -1,12 +1,12 @@
-from pydantic import ValidationError
 from config.auth import get_login_collaborator
 from models import Client, Collaborator
 from config.database import SessionLocal
-from controllers.client_validator import (
-    ClientDeleteInput,
-    ClientInput,
-    ClientInputUpdate,
+from validators.client_validator import (
+    validate_create_client,
+    validate_delete_client_input,
+    validate_update_client,
 )
+from views.base_view import permission_denied_view
 from views.client_view import (
     error_client_not_found_view,
     error_commercial_not_found_view,
@@ -14,33 +14,7 @@ from views.client_view import (
     success_create_client_view,
     success_delete_client_view,
     success_update_client_view,
-    validation_error_client_view,
 )
-
-
-def validate_create_client(**kwargs):
-    try:
-        user_input = ClientInput(**kwargs)
-        return user_input
-    except ValidationError as e:
-        validation_error_client_view(e)
-
-
-def validate_delete_client_input(**kwargs):
-    try:
-        user_input = ClientDeleteInput(**kwargs)
-        return user_input
-    except ValidationError as e:
-        validation_error_client_view(e)
-
-
-def validate_update_client(**kwargs):
-    try:
-        user_input = ClientInputUpdate(**kwargs)
-        return user_input
-    except ValidationError as e:
-        validation_error_client_view(e)
-
 
 def create_client_controller(
     full_name, email, phone_number, company_name
@@ -48,8 +22,6 @@ def create_client_controller(
     session = SessionLocal()
     collaborator = get_login_collaborator(session=session)
     commercial_collaborator_id = collaborator.id
-    print("************")
-    print(commercial_collaborator_id)
     client_data = {
         "full_name": full_name,
         "email": email,
@@ -90,7 +62,7 @@ def update_client_controller(
             client = Client.get_by_id(id, session)
             if client:
                 if login_collaborator_id != client.commercial_collaborator_id:
-                    print("Permission denied.")
+                    permission_denied_view()
                     exit(1)
                 client.update(session, **validated_data.dict())
                 success_update_client_view()
@@ -112,7 +84,7 @@ def delete_client_controller(client_id):
             client = Client.get_by_id(client_id, session)
             if client:
                 if login_collaborator_id != client.commercial_collaborator_id:
-                    print("Permission denied.")
+                    permission_denied_view()
                     exit(1)
                 client.delete(session)
                 success_delete_client_view()

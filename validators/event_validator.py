@@ -1,6 +1,8 @@
 from datetime import datetime
-from pydantic import BaseModel, validator
+from pydantic import BaseModel, ValidationError, validator
 from typing import Optional
+
+from views.event_view import validation_error_event_view
 
 
 class EventInput(BaseModel):
@@ -59,3 +61,27 @@ class EventInputUpdate(BaseModel):
 
 class EventDeleteInput(BaseModel):
     id: int
+
+
+def validate_create_event(**kwargs):
+    try:
+        user_input = EventInput(**kwargs)
+        return user_input
+    except ValidationError as e:
+        validation_error_event_view(e)
+
+
+def validate_delete_event_input(**kwargs):
+    try:
+        user_input = EventDeleteInput(**kwargs)
+        return user_input
+    except ValidationError as e:
+        validation_error_event_view(e)
+
+
+def validate_update_event(**kwargs):
+    try:
+        user_input = EventInputUpdate(**kwargs)
+        return user_input
+    except ValidationError as e:
+        validation_error_event_view(e)

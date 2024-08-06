@@ -5,9 +5,11 @@ sentry-sdk==2.7.1
 urllib3==2.2.2
 black
 pydantic-sqlalchemy==0.0.9
-sqlalchemy<2.0
+sqlalchemy
 pydantic
 bcrypt
 PyJWT==2.8.0
 click
 rich
+sentry-sdk
+pytest

@@ -153,10 +153,6 @@ class Collaborator(Base):
     def get_by_email(email, session):
         return session.query(Collaborator).filter(Collaborator.email == email).first()
 
-    #@staticmethod
-    #def get_by_name(name, session):
-        #return session.query(Collaborator).filter(Collaborator.name == name).first()
-
     @staticmethod
     def get_all(session):
         return session.query(Collaborator).all()

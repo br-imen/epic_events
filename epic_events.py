@@ -35,6 +35,21 @@ from models.collaborator import Collaborator, Role
 from models.contract import Contract
 from models.event import Event
 
+class DecimalType(click.ParamType):
+    name = "decimal"
+
+    def convert(self, value, param, ctx):
+        try:
+            dec_value = Decimal(value)
+            if dec_value < 0:
+                self.fail(f"{value} is not a non-negative decimal", param, ctx)
+            return dec_value
+        except InvalidOperation:
+            self.fail(f"{value} is not a valid decimal", param, ctx)
+
+
+DECIMAL = DecimalType()
+
 # Create a custom Click context to store the subcommand name
 class CustomContext(click.Context):
     def __init__(self, *args, **kwargs):
@@ -78,23 +93,6 @@ def validate_phone_number(ctx, param, value):
     if not re.match(r'^(\+33|0)\d{9}$', value):
         raise click.BadParameter('Invalid phone number format')
     return value
-
-
-# Validation for contract
-class DecimalType(click.ParamType):
-    name = "decimal"
-
-    def convert(self, value, param, ctx):
-        try:
-            dec_value = Decimal(value)
-            if dec_value < 0:
-                self.fail(f"{value} is not a non-negative decimal", param, ctx)
-            return dec_value
-        except InvalidOperation:
-            self.fail(f"{value} is not a valid decimal", param, ctx)
-
-
-DECIMAL = DecimalType()
 
 
 # Validate bool input status:
@@ -555,7 +553,7 @@ def update_contract(
 # Create event
 @cli.command()
 @click.option(
-    "--contract_id", prompt="Contract ID", callback=validate_contract_id, type=int, required=True, help="Contract ID"
+    "--contract_id", prompt="Contract ID", callback=validate_contract_by_collaborator, type=int, required=True, help="Contract ID"
 )
 @click.option(
     "--description",
@@ -687,4 +685,5 @@ def list_events(with_no_support, assigned_to_me):
 
 
 if __name__ == "__main__":
+    import config.sentry
     cli()

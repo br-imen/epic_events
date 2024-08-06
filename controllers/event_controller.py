@@ -1,8 +1,7 @@
-from pydantic import ValidationError
 from config.auth import get_login_collaborator
-from models import event, Collaborator
+from models import Collaborator
 from config.database import SessionLocal
-from controllers.event_validator import EventDeleteInput, EventInput, EventInputUpdate
+from validators.event_validator import validate_create_event, validate_delete_event_input, validate_update_event
 from models.client import Client
 from models.contract import Contract
 from models.event import Event
@@ -13,33 +12,7 @@ from views.event_view import (
     success_create_event_view,
     success_delete_event_view,
     success_update_event_view,
-    validation_error_event_view,
 )
-
-
-def validate_create_event(**kwargs):
-    try:
-        user_input = EventInput(**kwargs)
-        return user_input
-    except ValidationError as e:
-        validation_error_event_view(e)
-
-
-def validate_delete_event_input(**kwargs):
-    try:
-        user_input = EventDeleteInput(**kwargs)
-        return user_input
-    except ValidationError as e:
-        validation_error_event_view(e)
-
-
-def validate_update_event(**kwargs):
-    try:
-        user_input = EventInputUpdate(**kwargs)
-        return user_input
-    except ValidationError as e:
-        validation_error_event_view(e)
-
 
 def create_event_controller(
     contract_id,
@@ -51,7 +24,10 @@ def create_event_controller(
     attendees,
     notes,
 ):
+    session = SessionLocal()
+    client_id = Contract.get_by_id(contract_id, session).client_id if contract_id else None
     event_data = {
+        "client_id": client_id,
         "contract_id": contract_id,
         "description": description,
         "date_start": date_start,
@@ -67,7 +43,6 @@ def create_event_controller(
         try:
             found_support = Collaborator.get_by_id(collaborator_support_id , session)
             found_contract = Contract.get_by_id(contract_id,session)
-            validated_data["client_id"]= found_contract.client.id
             if found_support and found_contract:
                 if found_contract.status:
                     new_event = Event(**validated_data.dict())
@@ -91,7 +66,7 @@ def update_event_controller(
     notes=None,
 ):
     session = SessionLocal()
-    client = Contract.get_by_id(contract_id, session)
+    # client = Contract.get_by_id(contract_id, session)
     client_id = Contract.get_by_id(contract_id, session).client_id if contract_id else None
     event_data = {
         "id": id,
