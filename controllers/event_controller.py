@@ -39,7 +39,6 @@ def create_event_controller(
     }
     validated_data = validate_create_event(**event_data)
     if validated_data:
-        session = SessionLocal()
         try:
             found_support = Collaborator.get_by_id(collaborator_support_id , session)
             found_contract = Contract.get_by_id(contract_id,session)
@@ -82,7 +81,6 @@ def update_event_controller(
     }
     validated_data = validate_update_event(**event_data)
     if validated_data:
-        session = SessionLocal()
         try:
             event = Event.get_by_id(id, session)
             if event:

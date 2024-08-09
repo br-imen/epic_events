@@ -13,3 +13,8 @@ click
 rich
 sentry-sdk
 pytest
+coverage
+pytest-cov
+pytest-mock
+flake8
+black

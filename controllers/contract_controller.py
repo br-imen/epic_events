@@ -26,7 +26,7 @@ def create_contract_controller(
         "commercial_collaborator_id": commercial_collaborator_id,
         "total_amount": total_amount,
         "amount_due": amount_due,
-        "status": status,
+        "status": "Active",
     }
     validate_data = validate_create_contract_input(**contract_data)
     if validate_data:

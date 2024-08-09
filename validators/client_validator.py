@@ -12,7 +12,7 @@ class ClientInput(BaseModel):
     commercial_collaborator_id: str
 
 class ClientInputUpdate(BaseModel):
-    id = int
+    id : int
     full_name: str
     email: EmailStr
     phone_number: str

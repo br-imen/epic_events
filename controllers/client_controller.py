@@ -60,14 +60,8 @@ def update_client_controller(
     if validated_data:
         try:
             client = Client.get_by_id(id, session)
-            if client:
-                if login_collaborator_id != client.commercial_collaborator_id:
-                    permission_denied_view()
-                    exit(1)
-                client.update(session, **validated_data.dict())
-                success_update_client_view()
-            else:
-                error_client_not_found_view()
+            client.update(session, **validated_data.dict())
+            success_update_client_view()
         finally:
             session.close()
 
@@ -82,14 +76,8 @@ def delete_client_controller(client_id):
         try:
             session = SessionLocal()
             client = Client.get_by_id(client_id, session)
-            if client:
-                if login_collaborator_id != client.commercial_collaborator_id:
-                    permission_denied_view()
-                    exit(1)
-                client.delete(session)
-                success_delete_client_view()
-            else:
-                error_client_not_found_view()
+            client.delete(session)
+            success_delete_client_view()
         finally:
             session.close()
 

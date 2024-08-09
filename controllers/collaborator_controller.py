@@ -30,7 +30,6 @@ def create_collaborator_controller(employee_number, name, email, role_id, passwo
         session = SessionLocal()
         try:
             new_collaborator = Collaborator(**validated_data.dict())
-            print(new_collaborator.role)
             new_collaborator.save(session)
             success_create_collaborator_view()
         finally:

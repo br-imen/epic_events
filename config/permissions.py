@@ -1,6 +1,4 @@
 
-
-
 ROLES_PERMISSIONS = {
     "sales": ["create-client", "list-clients", "update-contract", "update-client", "delete-client", "list-contracts",
               "create-event", "list-collaborators","list-unpaid-contracts","list-unsigned-contracts", "list-events"],
