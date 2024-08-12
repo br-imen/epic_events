@@ -5,3 +5,4 @@ omit =
     config/permissions.py
     */__init__.py
     tests/*
+    epic_events.py

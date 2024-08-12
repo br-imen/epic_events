@@ -3,29 +3,29 @@ import datetime
 from unittest.mock import MagicMock
 from models.client import Client
 
-def test_save(mock_session, client):
-    client.save(mock_session)
-    mock_session.add.assert_called_once_with(client)
+def test_save(mock_session, client_unit):
+    client_unit.save(mock_session)
+    mock_session.add.assert_called_once_with(client_unit)
     mock_session.commit.assert_called_once()
 
-def test_update(mock_session, client):
-    client.update(mock_session, full_name="fool Doe")
-    assert client.full_name == "fool Doe"
-    assert client.last_contact is not None
-    mock_session.merge.assert_called_once_with(client)
+def test_update(mock_session, client_unit):
+    client_unit.update(mock_session, full_name="fool Doe")
+    assert client_unit.full_name == "fool Doe"
+    assert client_unit.last_contact is not None
+    mock_session.merge.assert_called_once_with(client_unit)
     mock_session.commit.assert_called_once()
 
-def test_delete(mock_session, client):
-    client.delete(mock_session)
-    mock_session.delete.assert_called_once_with(client)
+def test_delete(mock_session, client_unit):
+    client_unit.delete(mock_session)
+    mock_session.delete.assert_called_once_with(client_unit)
     mock_session.commit.assert_called_once()
 
 def test_get_by_id(mock_session):
     client_id = 1
     mock_client = MagicMock(id=client_id)
     mock_session.query.return_value.filter.return_value.first.return_value = mock_client
-    client = Client.get_by_id(client_id, mock_session)
-    assert client.id == client_id
+    client_unit = Client.get_by_id(client_id, mock_session)
+    assert client_unit.id == client_id
     mock_session.query.assert_called_once_with(Client)
     mock_session.query.return_value.filter.return_value.first.assert_called_once()
 
