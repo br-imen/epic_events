@@ -1,7 +1,8 @@
+from os import getenv
 import sentry_sdk
 
 sentry_sdk.init(
-    dsn="https://c65dbd20a40be644ad51cf076756cba2@o4507730039144448.ingest.de.sentry.io/4507730041765968",
+    dsn=getenv("SENTRY_DSN"),
     # Set traces_sample_rate to 1.0 to capture 100%
     # of transactions for performance monitoring.
     traces_sample_rate=1.0,
