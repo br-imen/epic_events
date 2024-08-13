@@ -113,12 +113,6 @@ def client_unit():
 
 
 @pytest.fixture
-def mock_jwt_decode():
-    with patch("config.auth.jwt.decode") as mock_decode:
-        yield mock_decode
-
-
-@pytest.fixture
 def mock_jwt_encode():
     with patch("config.auth.jwt.encode") as mock_decode:
         yield mock_decode

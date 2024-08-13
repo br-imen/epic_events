@@ -5,6 +5,10 @@ def success_login_view():
     print("Login successful!")
 
 
+def success_logout_view():
+    print("Logout successful!")
+
+
 def error_invalid_email_password_view():
     print("Invalid email or password.")
     logging.error("Invalid email or password.")

@@ -11,6 +11,7 @@ from controllers.client_controller import (
 from controllers.collaborator_controller import (
     create_collaborator_controller,
     authentication,
+    logout_controller,
     list_collaborators_controller,
     delete_collaborator_controller,
     update_collaborator_controller,
@@ -84,7 +85,7 @@ class AuthGroup(click.Group):
         ctx.invoked_subcommand = (
             ctx.protected_args[0] if ctx.protected_args else None
         )
-        if ctx.invoked_subcommand not in ("login",):
+        if ctx.invoked_subcommand not in ("login", "logout"):
             if not is_authenticated():
                 print("Authentication required. Exiting.")
                 exit(1)
@@ -166,6 +167,13 @@ def create_collaborator(employee_number, name, email, role_id, password):
 def login(email, password):
     """Login"""
     authentication(email, password)
+
+
+# Logout
+@cli.command()
+def logout():
+    """Logout"""
+    logout_controller()
 
 
 # List_collaborators
