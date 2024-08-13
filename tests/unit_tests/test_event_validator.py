@@ -1,4 +1,3 @@
-import pytest
 from unittest.mock import patch
 from pydantic import ValidationError
 from datetime import datetime, timedelta
@@ -20,7 +19,7 @@ valid_create_event_data = {
     "collaborator_support_id": 2,
     "location": "Event Location",
     "attendees": 100,
-    "notes": "Some notes"
+    "notes": "Some notes",
 }
 
 invalid_create_event_data_end_date = {
@@ -32,7 +31,7 @@ invalid_create_event_data_end_date = {
     "collaborator_support_id": 2,
     "location": "Event Location",
     "attendees": 100,
-    "notes": "Some notes"
+    "notes": "Some notes",
 }
 
 invalid_create_event_data_attendees = {
@@ -44,7 +43,7 @@ invalid_create_event_data_attendees = {
     "collaborator_support_id": 2,
     "location": "Event Location",
     "attendees": -10,  # Negative number of attendees
-    "notes": "Some notes"
+    "notes": "Some notes",
 }
 
 valid_update_event_data = {
@@ -57,7 +56,7 @@ valid_update_event_data = {
     "collaborator_support_id": 2,
     "location": "Updated Event Location",
     "attendees": 150,
-    "notes": "Updated notes"
+    "notes": "Updated notes",
 }
 
 invalid_update_event_data_end_date = {
@@ -70,7 +69,7 @@ invalid_update_event_data_end_date = {
     "collaborator_support_id": 2,
     "location": "Updated Event Location",
     "attendees": 150,
-    "notes": "Updated notes"
+    "notes": "Updated notes",
 }
 
 invalid_update_event_data_attendees = {
@@ -83,19 +82,15 @@ invalid_update_event_data_attendees = {
     "collaborator_support_id": 2,
     "location": "Updated Event Location",
     "attendees": -20,  # Negative number of attendees
-    "notes": "Updated notes"
+    "notes": "Updated notes",
 }
 
-valid_delete_event_data = {
-    "id": 1
-}
+valid_delete_event_data = {"id": 1}
 
-invalid_delete_event_data = {
-    "id": "invalid-id"  # ID should be an integer
-}
+invalid_delete_event_data = {"id": "invalid-id"}  # ID should be an integer
 
 
-@patch('validators.event_validator.validation_error_event_view')
+@patch("validators.event_validator.validation_error_event_view")
 def test_validate_create_event_valid(mock_validation_error):
     # Test with valid data
     user_input = validate_create_event(**valid_create_event_data)
@@ -104,20 +99,25 @@ def test_validate_create_event_valid(mock_validation_error):
     assert user_input.description == valid_create_event_data["description"]
     assert user_input.date_start == valid_create_event_data["date_start"]
     assert user_input.date_end == valid_create_event_data["date_end"]
-    assert user_input.collaborator_support_id == valid_create_event_data["collaborator_support_id"]
+    assert (
+        user_input.collaborator_support_id
+        == valid_create_event_data["collaborator_support_id"]
+    )
     assert user_input.location == valid_create_event_data["location"]
     assert user_input.attendees == valid_create_event_data["attendees"]
     assert user_input.notes == valid_create_event_data["notes"]
     mock_validation_error.assert_not_called()
 
-@patch('validators.event_validator.validation_error_event_view')
+
+@patch("validators.event_validator.validation_error_event_view")
 def test_validate_create_event_invalid_end_date(mock_validation_error):
     # Test with end date before start date
     validate_create_event(**invalid_create_event_data_end_date)
     mock_validation_error.assert_called_once()
     assert isinstance(mock_validation_error.call_args[0][0], ValidationError)
 
-@patch('validators.event_validator.validation_error_event_view')
+
+@patch("validators.event_validator.validation_error_event_view")
 def test_validate_create_event_invalid_attendees(mock_validation_error):
     # Test with negative attendees
     validate_create_event(**invalid_create_event_data_attendees)
@@ -125,7 +125,7 @@ def test_validate_create_event_invalid_attendees(mock_validation_error):
     assert isinstance(mock_validation_error.call_args[0][0], ValidationError)
 
 
-@patch('validators.event_validator.validation_error_event_view')
+@patch("validators.event_validator.validation_error_event_view")
 def test_validate_update_event_valid(mock_validation_error):
     # Test with valid data
     user_input = validate_update_event(**valid_update_event_data)
@@ -135,20 +135,25 @@ def test_validate_update_event_valid(mock_validation_error):
     assert user_input.description == valid_update_event_data["description"]
     assert user_input.date_start == valid_update_event_data["date_start"]
     assert user_input.date_end == valid_update_event_data["date_end"]
-    assert user_input.collaborator_support_id == valid_update_event_data["collaborator_support_id"]
+    assert (
+        user_input.collaborator_support_id
+        == valid_update_event_data["collaborator_support_id"]
+    )
     assert user_input.location == valid_update_event_data["location"]
     assert user_input.attendees == valid_update_event_data["attendees"]
     assert user_input.notes == valid_update_event_data["notes"]
     mock_validation_error.assert_not_called()
 
-@patch('validators.event_validator.validation_error_event_view')
+
+@patch("validators.event_validator.validation_error_event_view")
 def test_validate_update_event_invalid_end_date(mock_validation_error):
     # Test with end date before start date
     validate_update_event(**invalid_update_event_data_end_date)
     mock_validation_error.assert_called_once()
     assert isinstance(mock_validation_error.call_args[0][0], ValidationError)
 
-@patch('validators.event_validator.validation_error_event_view')
+
+@patch("validators.event_validator.validation_error_event_view")
 def test_validate_update_event_invalid_attendees(mock_validation_error):
     # Test with negative attendees
     validate_update_event(**invalid_update_event_data_attendees)
@@ -156,14 +161,15 @@ def test_validate_update_event_invalid_attendees(mock_validation_error):
     assert isinstance(mock_validation_error.call_args[0][0], ValidationError)
 
 
-@patch('validators.event_validator.validation_error_event_view')
+@patch("validators.event_validator.validation_error_event_view")
 def test_validate_delete_event_input_valid(mock_validation_error):
     # Test with valid data
     user_input = validate_delete_event_input(**valid_delete_event_data)
     assert user_input.id == valid_delete_event_data["id"]
     mock_validation_error.assert_not_called()
 
-@patch('validators.event_validator.validation_error_event_view')
+
+@patch("validators.event_validator.validation_error_event_view")
 def test_validate_delete_event_input_invalid(mock_validation_error):
     # Test with invalid data
     validate_delete_event_input(**invalid_delete_event_data)

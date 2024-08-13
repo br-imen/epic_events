@@ -1,5 +1,4 @@
 import os
-import pytest
 from unittest.mock import patch, mock_open
 from datetime import datetime, timedelta, timezone
 from config.auth import (
@@ -32,6 +31,7 @@ def test_is_token_expired(mock_jwt_decode, mock_datetime_now):
     # Token should be expired
     assert is_token_expired("dummy_token", "dummy_secret_key")
 
+
 def test_get_email_from_access_token(mock_jwt_decode):
     # Mock the decoded payload
     mock_payload = {"sub": "test@example.com"}
@@ -43,8 +43,9 @@ def test_get_email_from_access_token(mock_jwt_decode):
     # Assert email is correct
     assert email == "test@example.com"
 
+
 def test_get_token_from_file():
-     # Mock the file read operation
+    # Mock the file read operation
     m = mock_open(read_data="dummy_token")
     with patch("builtins.open", m):
         # Get token from file
@@ -71,10 +72,11 @@ def test_create_access_token(mock_jwt_encode, mock_datetime_now, mock_os_makedir
 
     # Mock the file write operation
     m = mock_open()
-    with patch("builtins.open", m), \
-        patch("config.auth.ACCESS_TOKEN_EXPIRE_MINUTES", ACCESS_TOKEN_EXPIRE_MINUTES), \
-        patch("config.auth.SECRET_KEY", SECRET_KEY), \
-        patch("config.auth.ALGORITHM", ALGORITHM):
+    with patch("builtins.open", m), patch(
+        "config.auth.ACCESS_TOKEN_EXPIRE_MINUTES", ACCESS_TOKEN_EXPIRE_MINUTES
+    ), patch("config.auth.SECRET_KEY", SECRET_KEY), patch(
+        "config.auth.ALGORITHM", ALGORITHM
+    ):
         # Call the function
         access_token = create_access_token({"data": "dummy_data"})
 
@@ -83,17 +85,34 @@ def test_create_access_token(mock_jwt_encode, mock_datetime_now, mock_os_makedir
 
         # Assert the function calls
         mock_jwt_encode.assert_called_once_with(
-            {"data": "dummy_data", "exp": mock_now + timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)},
+            {
+                "data": "dummy_data",
+                "exp": mock_now + timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES),
+            },
             SECRET_KEY,
             algorithm=ALGORITHM,
         )
         mock_os_makedirs.assert_called_once_with(
-            os.path.join(os.path.expanduser("~"), ".config", "epic_events"), exist_ok=True
+            os.path.join(os.path.expanduser("~"), ".config", "epic_events"),
+            exist_ok=True,
         )
-        m.assert_called_once_with(os.path.join(os.path.expanduser("~"), ".config", "epic_events", "access_token.txt"), "w")
+        m.assert_called_once_with(
+            os.path.join(
+                os.path.expanduser("~"),
+                ".config",
+                "epic_events",
+                "access_token.txt",
+            ),
+            "w",
+        )
         m().write.assert_called_once_with(mock_encoded_token)
 
-def test_get_login_collaborator(mock_get_token_from_file, mock_get_email_from_access_token, mock_Collaborator):
+
+def test_get_login_collaborator(
+    mock_get_token_from_file,
+    mock_get_email_from_access_token,
+    mock_Collaborator,
+):
     # Mock the token and email
     mock_token = "dummy_token"
     mock_get_token_from_file.return_value = mock_token
@@ -112,7 +131,9 @@ def test_get_login_collaborator(mock_get_token_from_file, mock_get_email_from_ac
     # Assert the function calls
     mock_get_token_from_file.assert_called_once()
     mock_get_email_from_access_token.assert_called_once_with(mock_token)
-    mock_Collaborator.get_by_email.assert_called_once_with(email=mock_email, session="dummy_session")
+    mock_Collaborator.get_by_email.assert_called_once_with(
+        email=mock_email, session="dummy_session"
+    )
 
 
 def test_is_authenticated(mock_get_token_from_file, mock_is_token_expired):
@@ -133,7 +154,6 @@ def test_is_authenticated(mock_get_token_from_file, mock_is_token_expired):
     mock_get_token_from_file.side_effect = None
     mock_is_token_expired.return_value = True
 
-
     # Call the function
     with patch("config.auth.SECRET_KEY", SECRET_KEY):
         authenticated = is_authenticated()
@@ -141,7 +161,9 @@ def test_is_authenticated(mock_get_token_from_file, mock_is_token_expired):
     # Assert token expired scenario
     assert not authenticated
     assert mock_get_token_from_file.call_count == 1
-    mock_is_token_expired.assert_called_with(mock_get_token_from_file.return_value, SECRET_KEY)
+    mock_is_token_expired.assert_called_with(
+        mock_get_token_from_file.return_value, SECRET_KEY
+    )
 
     mock_get_token_from_file.reset_mock()
     # Mock the valid token scenario
@@ -155,7 +177,9 @@ def test_is_authenticated(mock_get_token_from_file, mock_is_token_expired):
     # Assert valid token scenario
     assert authenticated
     assert mock_get_token_from_file.call_count == 1
-    mock_is_token_expired.assert_called_with(mock_get_token_from_file.return_value, SECRET_KEY)
+    mock_is_token_expired.assert_called_with(
+        mock_get_token_from_file.return_value, SECRET_KEY
+    )
 
 
 def test_has_permission(mock_get_login_collaborator):

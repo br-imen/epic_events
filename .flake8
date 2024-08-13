@@ -1,0 +1,3 @@
+[flake8]
+exclude = .pytest,venv,alembic,__init__.py,htmlcov
+max-line-length = 85

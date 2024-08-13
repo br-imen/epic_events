@@ -13,6 +13,7 @@ from views.contract_view import (
     list_contracts_view,
     success_create_contract_view,
     success_delete_contract_view,
+    success_signed_contract_view,
     success_update_contract_view,
 )
 
@@ -82,11 +83,15 @@ def update_contract_controller(
             contract = Contract.get_by_id(id, session=session)
             if contract:
                 found_client = Client.get_by_id(client_id, session)
-                found_commercial = Collaborator.get_by_id(commercial_collaborator_id, session)
+                found_commercial = Collaborator.get_by_id(
+                    commercial_collaborator_id, session
+                )
 
                 if found_client and found_commercial:
                     contract.update(session, **validated_data.dict())
                     success_update_contract_view()
+                    if contract_data["status"] is True:
+                        success_signed_contract_view()
                 else:
                     error_client_collaborator_not_found_view()
             else:

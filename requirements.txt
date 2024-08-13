@@ -3,7 +3,6 @@ psycopg2==2.9.9
 psycopg2-binary==2.9.9
 sentry-sdk==2.7.1
 urllib3==2.2.2
-black
 pydantic-sqlalchemy==0.0.9
 sqlalchemy
 pydantic

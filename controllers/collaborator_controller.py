@@ -67,7 +67,9 @@ def delete_collaborator_controller(employee_number):
     if validated_data:
         session = SessionLocal()
         try:
-            collaborator = Collaborator.get_by_employee_number(employee_number, session)
+            collaborator = Collaborator.get_by_employee_number(
+                employee_number, session
+            )
             if collaborator:
                 collaborator.delete(session)
                 success_delete_collaborator_view()
@@ -95,7 +97,12 @@ def authentication(email, password):
         try:
             collaborator = Collaborator.get_by_email(email, session)
             if collaborator and collaborator.verify_password(password):
-                access_token = create_access_token(data={"sub": collaborator.email, "role_id": collaborator.role_id})
+                access_token = create_access_token(
+                    data={
+                        "sub": collaborator.email,
+                        "role_id": collaborator.role_id,
+                    }
+                )
                 success_login_view()
                 return {"access_token": access_token, "token_type": "bearer"}
             else:

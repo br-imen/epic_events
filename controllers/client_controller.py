@@ -6,9 +6,7 @@ from validators.client_validator import (
     validate_delete_client_input,
     validate_update_client,
 )
-from views.base_view import permission_denied_view
 from views.client_view import (
-    error_client_not_found_view,
     error_commercial_not_found_view,
     list_client_view,
     success_create_client_view,
@@ -16,9 +14,8 @@ from views.client_view import (
     success_update_client_view,
 )
 
-def create_client_controller(
-    full_name, email, phone_number, company_name
-):
+
+def create_client_controller(full_name, email, phone_number, company_name):
     session = SessionLocal()
     collaborator = get_login_collaborator(session=session)
     commercial_collaborator_id = collaborator.id
@@ -32,7 +29,9 @@ def create_client_controller(
     validated_data = validate_create_client(**client_data)
     if validated_data:
         try:
-            found_commercial = Collaborator.get_by_id(commercial_collaborator_id, session)
+            found_commercial = Collaborator.get_by_id(
+                commercial_collaborator_id, session
+            )
             if found_commercial:
                 new_client = Client(**validated_data.dict())
                 new_client.save(session)
@@ -43,12 +42,8 @@ def create_client_controller(
             session.close()
 
 
-def update_client_controller(
-    id, full_name, email, phone_number, company_name
-):
+def update_client_controller(id, full_name, email, phone_number, company_name):
     session = SessionLocal()
-    login_collaborator = get_login_collaborator(session=session)
-    login_collaborator_id = login_collaborator.id
     client_data = {
         "id": id,
         "full_name": full_name,
@@ -70,8 +65,6 @@ def delete_client_controller(client_id):
     data = {"client_id": client_id}
     validated_data = validate_delete_client_input(**data)
     session = SessionLocal()
-    login_collaborator = get_login_collaborator(session=session)
-    login_collaborator_id = login_collaborator.id
     if validated_data:
         try:
             session = SessionLocal()

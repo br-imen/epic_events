@@ -1,12 +1,12 @@
 import sys
 import os
-
-# Add the project root directory to sys.path
-sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
-
 from config.database import SessionLocal
 from config.permissions import ROLES_PERMISSIONS
 from models.collaborator import Permission, Role
+
+# Add the project root directory to sys.path
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
+
 
 def main():
     session = SessionLocal()
@@ -19,7 +19,5 @@ def main():
             role_instance.save(session)
 
 
-
 if __name__ == "__main__":
     main()
-

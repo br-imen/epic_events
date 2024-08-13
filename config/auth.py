@@ -1,4 +1,3 @@
-from functools import wraps
 import os
 import jwt
 from datetime import datetime, timedelta, timezone
@@ -14,7 +13,9 @@ ACCESS_TOKEN_EXPIRE_MINUTES = 60
 # Create token and save it in ~/.config/epic_events/access_token.txt
 def create_access_token(data: dict):
     to_encode = data.copy()
-    expire = datetime.now(timezone.utc) + timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
+    expire = datetime.now(timezone.utc) + timedelta(
+        minutes=ACCESS_TOKEN_EXPIRE_MINUTES
+    )
     to_encode.update({"exp": expire})
     encoded_jwt = jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
     config_dir = os.path.join(os.path.expanduser("~"), ".config", "epic_events")
@@ -55,9 +56,13 @@ def get_token_from_file():
 # Check if token expired
 def is_token_expired(token, secret_key):
     try:
-        # Decode the token without verifying the signature to access the payload
+        # Decode the token without verifying the signature
+        # to access the payload
         payload = jwt.decode(
-            token, secret_key, algorithms=["HS256"], options={"verify_signature": False}
+            token,
+            secret_key,
+            algorithms=["HS256"],
+            options={"verify_signature": False},
         )
 
         # Get the expiration time from the payload
@@ -82,11 +87,13 @@ def is_token_expired(token, secret_key):
         # If the token is otherwise invalid
         raise ValueError(f"Invalid token: {e}")
 
+
 def get_login_collaborator(session):
     token = get_token_from_file()
     email = get_email_from_access_token(token)
     collaborator = Collaborator.get_by_email(email=email, session=session)
     return collaborator
+
 
 def is_authenticated():
     try:

@@ -11,7 +11,9 @@ class Event(Base):
     description = Column(String, nullable=False)
     date_start = Column(DateTime, nullable=False)
     date_end = Column(DateTime, nullable=False)
-    collaborator_support_id = Column(Integer, ForeignKey('collaborators.id'), nullable=False)
+    collaborator_support_id = Column(
+        Integer, ForeignKey("collaborators.id"), nullable=False
+    )
     location = Column(String, nullable=False)
     attendees = Column(Integer, nullable=False)
     notes = Column(String, nullable=True)
@@ -41,11 +43,13 @@ class Event(Base):
         if "with_no_support" in filters:
             events = events.filter(Event.collaborator_support_id is None)
         if "assigned_to_me" in filters:
-            events = events.filter(Event.collaborator_support_id == login_collaborator.id)
+            events = events.filter(
+                Event.collaborator_support_id == login_collaborator.id
+            )
         return events.all()
-    
+
     @staticmethod
-    def get_by_id(event_id,session):
+    def get_by_id(event_id, session):
         return session.query(Event).filter(Event.id == event_id).first()
 
     def __str__(self):
@@ -60,4 +64,4 @@ class Event(Base):
             f"Location: {self.location}\n"
             f"Attendees: {self.attendees}\n"
             f"Notes: {self.notes if self.notes else 'None'}"
-            )
+        )

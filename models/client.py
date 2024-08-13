@@ -1,8 +1,7 @@
-from sqlalchemy import Column, Integer, String, DateTime,ForeignKey
+from sqlalchemy import Column, Integer, String, DateTime, ForeignKey
 from sqlalchemy.orm import relationship
 from datetime import datetime
 from config.database import Base
-
 
 
 class Client(Base):
@@ -15,13 +14,14 @@ class Client(Base):
     company_name = Column(String)
     creation_date = Column(DateTime, default=datetime.utcnow)
     last_contact = Column(DateTime, default=datetime.utcnow)
-    commercial_collaborator_id = Column(Integer, ForeignKey('collaborators.id'))
+    commercial_collaborator_id = Column(Integer, ForeignKey("collaborators.id"))
 
     # Define a relationship to the Commercial model
     collaborator = relationship("Collaborator", back_populates="clients")
-    contracts = relationship("Contract", order_by="Contract.id", back_populates="client")
+    contracts = relationship(
+        "Contract", order_by="Contract.id", back_populates="client"
+    )
     events = relationship("Event", order_by="Event.id", back_populates="client")
-
 
     # Active Record CRUD Methods
     def save(self, session):
@@ -49,9 +49,9 @@ class Client(Base):
 
     def __str__(self):
         return (
-            f"Client {self.id}: {self.full_name}, Email: {self.email}, Phone: {self.phone_number}, "
+            f"Client {self.id}: {self.full_name}, Email: {self.email}, "
+            f"Phone: {self.phone_number}, "
             f"Company: {self.company_name}, Created: {self.creation_date}, "
-            f"Last Contact: {self.last_contact}, Commercial id: {self.commercial_collaborator_id}"
+            f"Last Contact: {self.last_contact}, "
+            f"Commercial id: {self.commercial_collaborator_id}"
         )
-    
-    

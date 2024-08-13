@@ -23,8 +23,9 @@ from validators.click_validator import (
     validate_contract_by_collaborator,
     validate_role,
     validate_support,
-    validate_employee_number
+    validate_employee_number,
 )
+
 
 def test_validate_email():
     # Test valid email
@@ -34,6 +35,7 @@ def test_validate_email():
     with pytest.raises(click.BadParameter):
         validate_email(None, None, "invalid-email")
 
+
 def test_validate_phone_number():
     # Test valid phone number
     assert validate_phone_number(None, None, "+33123456789") == "+33123456789"
@@ -42,6 +44,7 @@ def test_validate_phone_number():
     # Test invalid phone number
     with pytest.raises(click.BadParameter):
         validate_phone_number(None, None, "12345")
+
 
 def test_validate_boolean():
     # Test various true values
@@ -58,10 +61,13 @@ def test_validate_boolean():
     with pytest.raises(click.BadParameter):
         validate_boolean(None, None, "maybe")
 
-@patch('validators.click_validator.Client.get_by_id')
-@patch('validators.click_validator.get_login_collaborator')
-@patch('validators.click_validator.SessionLocal')
-def test_validate_client_by_sales(mock_session, mock_get_login_collaborator, mock_get_by_id):
+
+@patch("validators.click_validator.Client.get_by_id")
+@patch("validators.click_validator.get_login_collaborator")
+@patch("validators.click_validator.SessionLocal")
+def test_validate_client_by_sales(
+    mock_session, mock_get_login_collaborator, mock_get_by_id
+):
     mock_session.return_value = MagicMock()
     mock_client = MagicMock()
     mock_client.commercial_collaborator_id = 1
@@ -76,38 +82,52 @@ def test_validate_client_by_sales(mock_session, mock_get_login_collaborator, moc
     with pytest.raises(click.BadParameter):
         validate_client_by_sales(None, None, 1)
 
+
 def test_validate_amount():
     ctx = MagicMock()
-    ctx.params = {'total_amount': 100}
+    ctx.params = {"total_amount": 100}
 
     assert validate_amount(ctx, None, 50) == 50
 
     with pytest.raises(click.BadParameter):
         validate_amount(ctx, None, 150)
 
+
 def test_validate_date():
     ctx = MagicMock()
 
-    valid_date = (datetime.datetime.now() + datetime.timedelta(days=1)).strftime("%Y-%m-%d %H:%M")
+    valid_date = (datetime.datetime.now() + datetime.timedelta(days=1)).strftime(
+        "%Y-%m-%d %H:%M"
+    )
     assert validate_date(ctx, None, valid_date) == valid_date
 
-    past_date = (datetime.datetime.now() - datetime.timedelta(days=1)).strftime("%Y-%m-%d %H:%M")
+    past_date = (datetime.datetime.now() - datetime.timedelta(days=1)).strftime(
+        "%Y-%m-%d %H:%M"
+    )
     with pytest.raises(click.BadParameter):
         validate_date(ctx, None, past_date)
 
     with pytest.raises(click.BadParameter):
         validate_date(ctx, None, "invalid-date")
 
+
 def test_validate_end_date():
     ctx = MagicMock()
-    ctx.params = {'date_start': (datetime.datetime.now() + datetime.timedelta(days=1)).strftime("%Y-%m-%d %H:%M")}
+    ctx.params = {
+        "date_start": (
+            datetime.datetime.now() + datetime.timedelta(days=1)
+        ).strftime("%Y-%m-%d %H:%M")
+    }
 
-    valid_end_date = (datetime.datetime.now() + datetime.timedelta(days=2)).strftime("%Y-%m-%d %H:%M")
+    valid_end_date = (datetime.datetime.now() + datetime.timedelta(days=2)).strftime(
+        "%Y-%m-%d %H:%M"
+    )
     assert validate_end_date(ctx, None, valid_end_date) == valid_end_date
 
     invalid_end_date = (datetime.datetime.now()).strftime("%Y-%m-%d %H:%M")
     with pytest.raises(click.BadParameter):
         validate_end_date(ctx, None, invalid_end_date)
+
 
 def test_validate_attendees():
     assert validate_attendees(None, None, 10) == 10
@@ -118,8 +138,9 @@ def test_validate_attendees():
     with pytest.raises(click.BadParameter):
         validate_attendees(None, None, "invalid")
 
-@patch('validators.click_validator.Client.get_by_id')
-@patch('validators.click_validator.SessionLocal')
+
+@patch("validators.click_validator.Client.get_by_id")
+@patch("validators.click_validator.SessionLocal")
 def test_validate_client(mock_session, mock_get_by_id):
     mock_session.return_value = MagicMock()
     mock_get_by_id.return_value = True  # Simulate a found client
@@ -130,8 +151,9 @@ def test_validate_client(mock_session, mock_get_by_id):
     with pytest.raises(click.BadParameter):
         validate_client(None, None, 1)
 
-@patch('validators.click_validator.Event.get_by_id')
-@patch('validators.click_validator.SessionLocal')
+
+@patch("validators.click_validator.Event.get_by_id")
+@patch("validators.click_validator.SessionLocal")
 def test_validate_event_id(mock_session, mock_get_by_id):
     mock_session.return_value = MagicMock()
     mock_get_by_id.return_value = True  # Simulate a found event
@@ -142,10 +164,13 @@ def test_validate_event_id(mock_session, mock_get_by_id):
     with pytest.raises(click.BadParameter):
         validate_event_id(None, None, 1)
 
-@patch('validators.click_validator.Event.get_by_id')
-@patch('validators.click_validator.get_login_collaborator')
-@patch('validators.click_validator.SessionLocal')
-def test_validate_event_assigned_to_support_id(mock_session, mock_get_login_collaborator, mock_get_by_id):
+
+@patch("validators.click_validator.Event.get_by_id")
+@patch("validators.click_validator.get_login_collaborator")
+@patch("validators.click_validator.SessionLocal")
+def test_validate_event_assigned_to_support_id(
+    mock_session, mock_get_login_collaborator, mock_get_by_id
+):
     mock_session.return_value = MagicMock()
     mock_event = MagicMock()
     mock_event.collaborator_support_id = 1
@@ -160,8 +185,9 @@ def test_validate_event_assigned_to_support_id(mock_session, mock_get_login_coll
     with pytest.raises(click.BadParameter):
         validate_event_assigned_to_support_id(None, None, 1)
 
-@patch('validators.click_validator.Collaborator.get_by_id')
-@patch('validators.click_validator.SessionLocal')
+
+@patch("validators.click_validator.Collaborator.get_by_id")
+@patch("validators.click_validator.SessionLocal")
 def test_validate_collaborator(mock_session, mock_get_by_id):
     mock_session.return_value = MagicMock()
     mock_get_by_id.return_value = True  # Simulate a found collaborator
@@ -172,8 +198,9 @@ def test_validate_collaborator(mock_session, mock_get_by_id):
     with pytest.raises(click.BadParameter):
         validate_collaborator(None, None, 1)
 
-@patch('validators.click_validator.Collaborator.get_by_id')
-@patch('validators.click_validator.SessionLocal')
+
+@patch("validators.click_validator.Collaborator.get_by_id")
+@patch("validators.click_validator.SessionLocal")
 def test_validate_commercial(mock_session, mock_get_by_id):
     mock_session.return_value = MagicMock()
     mock_collaborator = MagicMock()
@@ -186,8 +213,9 @@ def test_validate_commercial(mock_session, mock_get_by_id):
     with pytest.raises(click.BadParameter):
         validate_commercial(None, None, 1)
 
-@patch('validators.click_validator.Contract.get_by_id')
-@patch('validators.click_validator.SessionLocal')
+
+@patch("validators.click_validator.Contract.get_by_id")
+@patch("validators.click_validator.SessionLocal")
 def test_validate_contract(mock_session, mock_get_by_id):
     mock_session.return_value = MagicMock()
     mock_get_by_id.return_value = True  # Simulate a found contract
@@ -198,8 +226,9 @@ def test_validate_contract(mock_session, mock_get_by_id):
     with pytest.raises(click.BadParameter):
         validate_contract(None, None, 1)
 
-@patch('validators.click_validator.Contract.get_by_id')
-@patch('validators.click_validator.SessionLocal')
+
+@patch("validators.click_validator.Contract.get_by_id")
+@patch("validators.click_validator.SessionLocal")
 def test_validate_contract_id(mock_session, mock_get_by_id):
     mock_session.return_value = MagicMock()
     mock_contract = MagicMock()
@@ -212,10 +241,13 @@ def test_validate_contract_id(mock_session, mock_get_by_id):
     with pytest.raises(click.BadParameter):
         validate_contract_id(None, None, 1)
 
-@patch('validators.click_validator.Contract.get_by_id')
-@patch('validators.click_validator.get_login_collaborator')
-@patch('validators.click_validator.SessionLocal')
-def test_validate_contract_by_collaborator(mock_session, mock_get_login_collaborator, mock_get_by_id):
+
+@patch("validators.click_validator.Contract.get_by_id")
+@patch("validators.click_validator.get_login_collaborator")
+@patch("validators.click_validator.SessionLocal")
+def test_validate_contract_by_collaborator(
+    mock_session, mock_get_login_collaborator, mock_get_by_id
+):
     mock_session.return_value = MagicMock()
     mock_contract = MagicMock()
     mock_contract.commercial_collaborator_id = 1
@@ -232,8 +264,9 @@ def test_validate_contract_by_collaborator(mock_session, mock_get_login_collabor
     with pytest.raises(click.BadParameter):
         validate_contract_by_collaborator(None, None, 1)
 
-@patch('validators.click_validator.Role.get_by_id')
-@patch('validators.click_validator.SessionLocal')
+
+@patch("validators.click_validator.Role.get_by_id")
+@patch("validators.click_validator.SessionLocal")
 def test_validate_role(mock_session, mock_get_by_id):
     mock_session.return_value = MagicMock()
     mock_get_by_id.return_value = True  # Simulate a found role
@@ -244,8 +277,9 @@ def test_validate_role(mock_session, mock_get_by_id):
     with pytest.raises(click.BadParameter):
         validate_role(None, None, 1)
 
-@patch('validators.click_validator.Collaborator.get_by_id')
-@patch('validators.click_validator.SessionLocal')
+
+@patch("validators.click_validator.Collaborator.get_by_id")
+@patch("validators.click_validator.SessionLocal")
 def test_validate_support(mock_session, mock_get_by_id):
     mock_session.return_value = MagicMock()
     mock_collaborator = MagicMock()
@@ -258,8 +292,9 @@ def test_validate_support(mock_session, mock_get_by_id):
     with pytest.raises(click.BadParameter):
         validate_support(None, None, 1)
 
-@patch('validators.click_validator.Collaborator.get_by_employee_number')
-@patch('validators.click_validator.SessionLocal')
+
+@patch("validators.click_validator.Collaborator.get_by_employee_number")
+@patch("validators.click_validator.SessionLocal")
 def test_validate_employee_number(mock_session, mock_get_by_employee_number):
     mock_session.return_value = MagicMock()
     mock_get_by_employee_number.return_value = True  # Simulate a found employee

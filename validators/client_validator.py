@@ -3,7 +3,6 @@ from pydantic import BaseModel, EmailStr, ValidationError
 from views.client_view import validation_error_client_view
 
 
-
 class ClientInput(BaseModel):
     full_name: str
     email: EmailStr
@@ -11,16 +10,17 @@ class ClientInput(BaseModel):
     company_name: str
     commercial_collaborator_id: str
 
+
 class ClientInputUpdate(BaseModel):
-    id : int
+    id: int
     full_name: str
     email: EmailStr
     phone_number: str
     company_name: str
 
+
 class ClientDeleteInput(BaseModel):
     client_id: int
-
 
 
 def validate_create_client(**kwargs):

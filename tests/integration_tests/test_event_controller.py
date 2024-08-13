@@ -1,5 +1,4 @@
 from datetime import datetime
-import pytest
 from unittest.mock import patch
 from controllers.event_controller import (
     create_event_controller,
@@ -11,9 +10,11 @@ from models.event import Event
 from sqlalchemy.orm import Session
 
 
-def test_create_event_controller(test_db: Session, client, collaborator, contract, capsys):
+def test_create_event_controller(
+    test_db: Session, client, collaborator, contract, capsys
+):
     contract_id = contract.id
-    with patch('controllers.event_controller.SessionLocal', return_value=test_db):
+    with patch("controllers.event_controller.SessionLocal", return_value=test_db):
         create_event_controller(
             contract_id=contract_id,
             description="Test Event",
@@ -22,7 +23,7 @@ def test_create_event_controller(test_db: Session, client, collaborator, contrac
             collaborator_support_id=collaborator.id,
             location="Conference Room",
             attendees=20,
-            notes="Important meeting."
+            notes="Important meeting.",
         )
 
     # Check the output printed by the view
@@ -36,10 +37,12 @@ def test_create_event_controller(test_db: Session, client, collaborator, contrac
     assert event.location == "Conference Room"
 
 
-def test_update_event_controller(test_db: Session, client, collaborator, contract, capsys):
+def test_update_event_controller(
+    test_db: Session, client, collaborator, contract, capsys
+):
     client_id = client.id
     contract_id = contract.id
-    with patch('controllers.event_controller.SessionLocal', return_value=test_db):
+    with patch("controllers.event_controller.SessionLocal", return_value=test_db):
         event = Event(
             client_id=client_id,
             contract_id=contract.id,
@@ -49,7 +52,7 @@ def test_update_event_controller(test_db: Session, client, collaborator, contrac
             collaborator_support_id=collaborator.id,
             location="Conference Room A",
             attendees=15,
-            notes="Initial notes."
+            notes="Initial notes.",
         )
         event.save(test_db)
         event_id = event.id
@@ -62,7 +65,7 @@ def test_update_event_controller(test_db: Session, client, collaborator, contrac
             collaborator_support_id=collaborator.id,
             location="Conference Room B",
             attendees=30,
-            notes="Updated notes."
+            notes="Updated notes.",
         )
 
     # Check the output printed by the view
@@ -76,8 +79,10 @@ def test_update_event_controller(test_db: Session, client, collaborator, contrac
     assert updated_event.attendees == 30
 
 
-def test_delete_event_controller(test_db: Session, client, collaborator, contract, capsys):
-    with patch('controllers.event_controller.SessionLocal', return_value=test_db):
+def test_delete_event_controller(
+    test_db: Session, client, collaborator, contract, capsys
+):
+    with patch("controllers.event_controller.SessionLocal", return_value=test_db):
         event = Event(
             client_id=client.id,
             contract_id=contract.id,
@@ -87,7 +92,7 @@ def test_delete_event_controller(test_db: Session, client, collaborator, contrac
             collaborator_support_id=collaborator.id,
             location="Conference Room",
             attendees=10,
-            notes="To be deleted."
+            notes="To be deleted.",
         )
         event.save(test_db)
 
@@ -102,10 +107,16 @@ def test_delete_event_controller(test_db: Session, client, collaborator, contrac
     assert deleted_event is None
 
 
-def test_list_events_controller(test_db: Session, client, collaborator, contract, capsys):
-    with patch('controllers.event_controller.SessionLocal', return_value=test_db), \
-         patch('controllers.event_controller.get_login_collaborator', return_value=collaborator):
-        
+def test_list_events_controller(
+    test_db: Session, client, collaborator, contract, capsys
+):
+    with patch(
+        "controllers.event_controller.SessionLocal", return_value=test_db
+    ), patch(
+        "controllers.event_controller.get_login_collaborator",
+        return_value=collaborator,
+    ):
+
         event1 = Event(
             client_id=client.id,
             contract_id=contract.id,
@@ -115,7 +126,7 @@ def test_list_events_controller(test_db: Session, client, collaborator, contract
             collaborator_support_id=collaborator.id,
             location="Conference Room A",
             attendees=25,
-            notes="First event notes."
+            notes="First event notes.",
         )
         event2 = Event(
             client_id=client.id,
@@ -126,7 +137,7 @@ def test_list_events_controller(test_db: Session, client, collaborator, contract
             collaborator_support_id=collaborator.id,
             location="Conference Room B",
             attendees=40,
-            notes="Second event notes."
+            notes="Second event notes.",
         )
         test_db.add(event1)
         test_db.add(event2)

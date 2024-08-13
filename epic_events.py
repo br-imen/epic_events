@@ -27,7 +27,11 @@ from controllers.event_controller import (
     list_events_controller,
     update_event_controller,
 )
-from config.auth import get_login_collaborator, has_permission, is_authenticated
+from config.auth import (
+    get_login_collaborator,
+    has_permission,
+    is_authenticated,
+)
 from validators.click_validator import (
     validate_amount,
     validate_attendees,
@@ -49,6 +53,7 @@ from validators.click_validator import (
     validate_support,
 )
 
+
 class DecimalType(click.ParamType):
     name = "decimal"
 
@@ -64,18 +69,22 @@ class DecimalType(click.ParamType):
 
 DECIMAL = DecimalType()
 
+
 # Create a custom Click context to store the subcommand name
 class CustomContext(click.Context):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.subcommand = None
 
+
 class AuthGroup(click.Group):
 
     def invoke(self, ctx):
         session = SessionLocal()
-        ctx.invoked_subcommand = ctx.protected_args[0] if ctx.protected_args else None
-        if ctx.invoked_subcommand not in ("login", ):
+        ctx.invoked_subcommand = (
+            ctx.protected_args[0] if ctx.protected_args else None
+        )
+        if ctx.invoked_subcommand not in ("login",):
             if not is_authenticated():
                 print("Authentication required. Exiting.")
                 exit(1)
@@ -83,17 +92,25 @@ class AuthGroup(click.Group):
                 print("Permission denied.")
                 exit(1)
         if ctx.invoked_subcommand == "update-event":
-            login_collaborator = get_login_collaborator(session)  # Replace with actual method to get the collaborator
+            login_collaborator = get_login_collaborator(
+                session
+            )  # Replace with actual method to get the collaborator
             if str(login_collaborator.role) == "management":
-                ctx.protected_args = ["update-event-management"] + ctx.protected_args[1:]
+                ctx.protected_args = [
+                    "update-event-management"
+                ] + ctx.protected_args[1:]
             elif str(login_collaborator.role) == "support":
-                ctx.protected_args = ["update-event-support"] + ctx.protected_args[1:]
+                ctx.protected_args = ["update-event-support"] + ctx.protected_args[
+                    1:
+                ]
             ctx.invoked_subcommand = ctx.protected_args[0]
         super().invoke(ctx)
-        
+
+
 @click.group(cls=AuthGroup)
 def cli():
     pass
+
 
 # Create collaborator
 @cli.command()
@@ -102,12 +119,22 @@ def cli():
     prompt="Employee Number",
     help="The employee number of the collaborator.",
 )
-@click.option("--name", type=str, prompt="Name", help="The name of the collaborator.")
 @click.option(
-    "--email", type=EmailStr, callback=validate_email, prompt="Email", help="The email of the collaborator."
+    "--name", type=str, prompt="Name", help="The name of the collaborator."
 )
 @click.option(
-    "--role-id", type=int, callback=validate_role, prompt="Role ID", help="The role ID of the collaborator."
+    "--email",
+    type=EmailStr,
+    callback=validate_email,
+    prompt="Email",
+    help="The email of the collaborator.",
+)
+@click.option(
+    "--role-id",
+    type=int,
+    callback=validate_role,
+    prompt="Role ID",
+    help="The role ID of the collaborator.",
 )
 @click.option(
     "--password",
@@ -120,14 +147,20 @@ def create_collaborator(employee_number, name, email, role_id, password):
     """Create collaborator"""
     create_collaborator_controller(employee_number, name, email, role_id, password)
 
+
 # Login
 @cli.command()
-@click.option("--email", type=str, prompt="Email", callback=validate_email, help="The email of the user.")
+@click.option(
+    "--email",
+    type=str,
+    prompt="Email",
+    callback=validate_email,
+    help="The email of the user.",
+)
 @click.option(
     "--password",
     prompt=True,
     hide_input=True,
-
     help="The password of the user.",
 )
 def login(email, password):
@@ -165,12 +198,22 @@ def delete_collaborator(employee_number):
     callback=validate_employee_number,
     help="The employee number of the collaborator.",
 )
-@click.option("--name", type=str, prompt="Name", help="The name of the collaborator.")
 @click.option(
-    "--email", type=str, prompt="Email", callback=validate_email, help="The email of the collaborator."
+    "--name", type=str, prompt="Name", help="The name of the collaborator."
 )
 @click.option(
-    "--role-id", type=int, callback=validate_role, prompt="Role ID", help="The role ID of the collaborator."
+    "--email",
+    type=str,
+    prompt="Email",
+    callback=validate_email,
+    help="The email of the collaborator.",
+)
+@click.option(
+    "--role-id",
+    type=int,
+    callback=validate_role,
+    prompt="Role ID",
+    help="The role ID of the collaborator.",
 )
 @click.option(
     "--password",
@@ -218,9 +261,7 @@ def update_collaborator(employee_number, name, email, role_id, password):
 )
 def create_client(full_name, email, phone_number, company_name):
     """Create client"""
-    create_client_controller(
-        full_name, email, phone_number, company_name
-    )
+    create_client_controller(full_name, email, phone_number, company_name)
 
 
 # List clients
@@ -287,15 +328,18 @@ def delete_client(client_id):
 )
 def update_client(id, full_name, email, phone_number, company_name):
     """Update client"""
-    update_client_controller(
-        id, full_name, email, phone_number, company_name
-    )
+    update_client_controller(id, full_name, email, phone_number, company_name)
 
 
 # Create contract
 @cli.command()
 @click.option(
-    "--client_id", prompt="client id", callback=validate_client, type=int, required=True, help="Client ID"
+    "--client_id",
+    prompt="client id",
+    callback=validate_client,
+    type=int,
+    required=True,
+    help="Client ID",
 )
 @click.option(
     "--commercial_collaborator_id",
@@ -312,10 +356,24 @@ def update_client(id, full_name, email, phone_number, company_name):
     help="Total Amount",
 )
 @click.option(
-    "--amount_due", prompt="amount_due", callback=validate_amount, type=DECIMAL, required=True, help="Amount Due"
+    "--amount_due",
+    prompt="amount_due",
+    callback=validate_amount,
+    type=DECIMAL,
+    required=True,
+    help="Amount Due",
 )
-@click.option("--status", prompt="is signed", type=bool, callback=validate_boolean, required=True, help="Status signed or not")
-def create_contract(client_id, commercial_collaborator_id, total_amount, amount_due, status):
+@click.option(
+    "--status",
+    prompt="is signed",
+    type=bool,
+    callback=validate_boolean,
+    required=True,
+    help="Status signed or not",
+)
+def create_contract(
+    client_id, commercial_collaborator_id, total_amount, amount_due, status
+):
     """Create contract"""
     create_contract_controller(
         client_id, commercial_collaborator_id, total_amount, amount_due, status
@@ -347,7 +405,12 @@ def list_contracts(unpaid, unsigned):
 # Delete contracts
 @cli.command()
 @click.option(
-    "--contract-id", prompt="contract id", callback=validate_contract_by_collaborator, type=int, required=True, help="Contract ID"
+    "--contract-id",
+    prompt="contract id",
+    callback=validate_contract_by_collaborator,
+    type=int,
+    required=True,
+    help="Contract ID",
 )
 def delete_contract(contract_id):
     """Delete contract"""
@@ -356,9 +419,21 @@ def delete_contract(contract_id):
 
 # Update contracts
 @cli.command()
-@click.option("--id", prompt="contract id", type=int, callback=validate_contract_by_collaborator, required=True, help="Contract ID")
 @click.option(
-    "--client_id", prompt="client id", type=int, callback=validate_client, required=True, help="Client ID"
+    "--id",
+    prompt="contract id",
+    type=int,
+    callback=validate_contract_by_collaborator,
+    required=True,
+    help="Contract ID",
+)
+@click.option(
+    "--client_id",
+    prompt="client id",
+    type=int,
+    callback=validate_client,
+    required=True,
+    help="Client ID",
 )
 @click.option(
     "--commercial_collaborator_id",
@@ -375,22 +450,39 @@ def delete_contract(contract_id):
     help="Total Amount",
 )
 @click.option(
-    "--amount_due", prompt="amount_due", callback=validate_amount, type=DECIMAL, required=True, help="Amount Due"
+    "--amount_due",
+    prompt="amount_due",
+    callback=validate_amount,
+    type=DECIMAL,
+    required=True,
+    help="Amount Due",
 )
-@click.option("--status", prompt="is signed", type=bool, required=True, help="Status")
+@click.option(
+    "--status", prompt="is signed", type=bool, required=True, help="Status"
+)
 def update_contract(
     id, client_id, commercial_collaborator_id, total_amount, amount_due, status
 ):
     """Update contract"""
     update_contract_controller(
-        id, client_id, commercial_collaborator_id, total_amount, amount_due, status
+        id,
+        client_id,
+        commercial_collaborator_id,
+        total_amount,
+        amount_due,
+        status,
     )
 
 
 # Create event
 @cli.command()
 @click.option(
-    "--contract_id", prompt="Contract ID", callback=validate_contract_by_collaborator, type=int, required=True, help="Contract ID"
+    "--contract_id",
+    prompt="Contract ID",
+    callback=validate_contract_by_collaborator,
+    type=int,
+    required=True,
+    help="Contract ID",
 )
 @click.option(
     "--description",
@@ -415,13 +507,19 @@ def update_contract(
     required=True,
     help="End date and time",
 )
-@click.option("--collaborator_support_id", prompt="Support id ", callback=validate_support, type=int, help="Support ID")
+@click.option(
+    "--collaborator_support_id",
+    prompt="Support id ",
+    callback=validate_support,
+    type=int,
+    help="Support ID",
+)
 @click.option(
     "--location",
     prompt="Location",
     type=str,
     required=True,
-    help="Location of the event"
+    help="Location of the event",
 )
 @click.option(
     "--attendees",
@@ -432,7 +530,11 @@ def update_contract(
     help="Number of attendees",
 )
 @click.option(
-    "--notes", prompt="Notes", type=str, required=False, help="Additional notes"
+    "--notes",
+    prompt="Notes",
+    type=str,
+    required=False,
+    help="Additional notes",
 )
 def create_event(
     contract_id,
@@ -448,7 +550,7 @@ def create_event(
     event_data = {
         "contract_id": contract_id,
         "description": description,
-        "date_start":date_start ,
+        "date_start": date_start,
         "date_end": date_end,
         "collaborator_support_id": collaborator_support_id,
         "location": location,
@@ -457,28 +559,114 @@ def create_event(
     }
     create_event_controller(**event_data)
 
+
 @click.command()
-@click.option("--id", prompt="Event ID", type=int, callback=validate_event_id, required=True, help="Event ID")
-@click.option("--collaborator_support_id", type=int, prompt="support contact id", callback=validate_support, required=True, help="support id")
+@click.option(
+    "--id",
+    prompt="Event ID",
+    type=int,
+    callback=validate_event_id,
+    required=True,
+    help="Event ID",
+)
+@click.option(
+    "--collaborator_support_id",
+    type=int,
+    prompt="support contact id",
+    callback=validate_support,
+    required=True,
+    help="support id",
+)
 def update_event_management(id, collaborator_support_id):
     """Update event for manager role"""
     update_data = {
         "id": id,
-        "collaborator_support_id": collaborator_support_id
+        "collaborator_support_id": collaborator_support_id,
     }
     update_event_controller(**update_data)
 
+
 @click.command()
-@click.option("--id", prompt="Event ID", type=int, callback=validate_event_assigned_to_support_id, required=True, help="Event ID")
-@click.option("--contract_id", prompt="Contract ID", callback=validate_contract_id, type=int, required=False, help="Contract ID")
-@click.option("--description", prompt="Description", type=str, required=False, help="Description of the event")
-@click.option("--date_start", type=str, prompt="Date start", callback=validate_date, required=False, help="Start date and time (YYYY-MM-DD HH:MM:SS)")
-@click.option("--date_end", type=str, prompt="Date end", callback=validate_end_date, required=False, help="End date and time (YYYY-MM-DD HH:MM:SS)")
-@click.option("--collaborator_support_id", type=int, prompt="Support contact id", callback=validate_support, required=False, help="Support id")
-@click.option("--location", type=str, prompt="Location", required=False, help="Location of the event")
-@click.option("--attendees", type=int, callback=validate_attendees, prompt="Attendees", required=False, help="Number of attendees")
-@click.option("--notes", type=str, prompt="Notes", required=False, help="Additional notes")
-def update_event_support(id, contract_id, description, date_start, date_end, collaborator_support_id, location, attendees, notes):
+@click.option(
+    "--id",
+    prompt="Event ID",
+    type=int,
+    callback=validate_event_assigned_to_support_id,
+    required=True,
+    help="Event ID",
+)
+@click.option(
+    "--contract_id",
+    prompt="Contract ID",
+    callback=validate_contract_id,
+    type=int,
+    required=False,
+    help="Contract ID",
+)
+@click.option(
+    "--description",
+    prompt="Description",
+    type=str,
+    required=False,
+    help="Description of the event",
+)
+@click.option(
+    "--date_start",
+    type=str,
+    prompt="Date start",
+    callback=validate_date,
+    required=False,
+    help="Start date and time (YYYY-MM-DD HH:MM:SS)",
+)
+@click.option(
+    "--date_end",
+    type=str,
+    prompt="Date end",
+    callback=validate_end_date,
+    required=False,
+    help="End date and time (YYYY-MM-DD HH:MM:SS)",
+)
+@click.option(
+    "--collaborator_support_id",
+    type=int,
+    prompt="Support contact id",
+    callback=validate_support,
+    required=False,
+    help="Support id",
+)
+@click.option(
+    "--location",
+    type=str,
+    prompt="Location",
+    required=False,
+    help="Location of the event",
+)
+@click.option(
+    "--attendees",
+    type=int,
+    callback=validate_attendees,
+    prompt="Attendees",
+    required=False,
+    help="Number of attendees",
+)
+@click.option(
+    "--notes",
+    type=str,
+    prompt="Notes",
+    required=False,
+    help="Additional notes",
+)
+def update_event_support(
+    id,
+    contract_id,
+    description,
+    date_start,
+    date_end,
+    collaborator_support_id,
+    location,
+    attendees,
+    notes,
+):
     """Update event for support role"""
     update_data = {
         "id": id,
@@ -494,8 +682,10 @@ def update_event_support(id, contract_id, description, date_start, date_end, col
     update_data = {k: v for k, v in update_data.items() if v is not None}
     update_event_controller(**update_data)
 
+
 cli.add_command(update_event_management)
 cli.add_command(update_event_support)
+
 
 # Delete event
 @cli.command()
@@ -513,14 +703,19 @@ def list_events(with_no_support, assigned_to_me):
     """List events"""
     filters = []
     if with_no_support and assigned_to_me:
-        raise click.BadParameter("Can't use both with_no_support and assigned_to_me together")
+        raise click.BadParameter(
+            "Can't use both with_no_support and assigned_to_me together"
+        )
     if with_no_support:
         filters.append("with_no_support")
     elif assigned_to_me:
         filters.append("assigned_to_me")
-    list_events_controller(filters, )
+    list_events_controller(
+        filters,
+    )
 
 
 if __name__ == "__main__":
-    import config.sentry
+    import config.sentry  # noqa
+
     cli()
