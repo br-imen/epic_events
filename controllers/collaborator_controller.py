@@ -1,3 +1,4 @@
+import os
 from config.auth import create_access_token
 from validators.collaborator_validator import (
     validate_collaborator_input,
@@ -11,6 +12,7 @@ from views.collaborator_view import (
     success_login_view,
     success_create_collaborator_view,
     error_invalid_email_password_view,
+    success_logout_view,
     success_update_collaborator_view,
     list_collaborators_view,
 )
@@ -110,3 +112,16 @@ def authentication(email, password):
                 return None
         finally:
             session.close()
+
+
+# Logout
+def logout_controller():
+    # Define the path to the token file
+    config_dir = os.path.join(os.path.expanduser("~"), ".config", "epic_events")
+    token_path = os.path.join(config_dir, "access_token.txt")
+
+    # Check if the file exists
+    if os.path.exists(token_path):
+        # Delete the token file
+        os.remove(token_path)
+    success_logout_view()
