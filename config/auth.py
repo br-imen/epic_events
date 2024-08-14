@@ -4,10 +4,10 @@ from datetime import datetime, timedelta, timezone
 
 from models.collaborator import Collaborator
 
-
-SECRET_KEY = "your_secret_key"
-ALGORITHM = "HS256"
-ACCESS_TOKEN_EXPIRE_MINUTES = 60
+# Load environment variables
+SECRET_KEY = os.getenv("SECRET_KEY")
+ALGORITHM = os.getenv("ALGORITHM")
+ACCESS_TOKEN_EXPIRE_MINUTES = os.getenv("ACCESS_TOKEN_EXPIRE_MINUTES")
 
 
 # Create token and save it in ~/.config/epic_events/access_token.txt
@@ -88,6 +88,8 @@ def is_token_expired(token, secret_key):
         raise ValueError(f"Invalid token: {e}")
 
 
+# Retrieves the currently logged-in collaborator from the database using the email
+# extracted from the JWT token.
 def get_login_collaborator(session):
     token = get_token_from_file()
     email = get_email_from_access_token(token)
@@ -95,6 +97,7 @@ def get_login_collaborator(session):
     return collaborator
 
 
+# Checks if the current JWT token is present and valid
 def is_authenticated():
     try:
         token = get_token_from_file()
@@ -108,6 +111,8 @@ def is_authenticated():
     return True
 
 
+# Verifies if the currently logged-in collaborator has permission to execute the
+# specified command based on their assigned role and permissions in the system.
 def has_permission(command, session):
     collaborator = get_login_collaborator(session=session)
     role = collaborator.role
