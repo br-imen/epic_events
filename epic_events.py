@@ -1,5 +1,6 @@
 from decimal import Decimal, InvalidOperation
 import click
+from dotenv import load_dotenv
 from pydantic import EmailStr
 from config.database import SessionLocal
 from controllers.client_controller import (
@@ -54,7 +55,11 @@ from validators.click_validator import (
     validate_support,
 )
 
+# Load environment variables from .env file
+load_dotenv()
 
+
+# Custom Click parameter type for validating non-negative decimal inputs.
 class DecimalType(click.ParamType):
     name = "decimal"
 
@@ -78,6 +83,8 @@ class CustomContext(click.Context):
         self.subcommand = None
 
 
+# Custom Click group that enforces authentication and permission checks
+# before executing subcommands.
 class AuthGroup(click.Group):
 
     def invoke(self, ctx):
