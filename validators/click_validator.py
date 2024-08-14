@@ -256,7 +256,22 @@ def validate_event_id(ctx, param, value):
 
 # Validates that the logged-in support collaborator is assigned to the event.
 def validate_event_assigned_to_support_id(ctx, param, value):
-    
+    """
+    Validates if the event is assigned to the support ID of the
+    logged-in collaborator.
+
+    Args:
+        ctx (click.Context): The click context.
+        param (click.Parameter): The click parameter.
+        value: The value to be validated.
+
+    Returns:
+        The validated value.
+
+    Raises:
+        click.BadParameter: If the event is not found or the logged-in
+        collaborator is not allowed to update the event.
+    """
     session = SessionLocal()
     login_collaborator = get_login_collaborator(session)
     event = Event.get_by_id(value, session)
