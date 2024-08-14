@@ -1,3 +1,4 @@
+# Description: This file contains the permissions for each role in the system.
 ROLES_PERMISSIONS = {
     "sales": [
         "create-client",

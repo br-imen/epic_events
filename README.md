@@ -12,6 +12,7 @@
 - [Contributing](#contributing)
 - [License](#license)
 - [Contact](#contact)
+- [Schema db](#schema-db)
 
 ## Project Overview
 Epic Events is a command-line interface (CLI) application designed to manage clients, contracts, and events efficiently. The application is built using Python, with Click for the CLI, SQLAlchemy for ORM, and Alembic for managing database migrations. This tool is ideal for users who need to interact with their event management system directly from the terminal.
@@ -26,7 +27,7 @@ Epic Events is a command-line interface (CLI) application designed to manage cli
 ## Technologies Used
 - Programming Language: Python
 - CLI Framework: Click
-- Database: SQLite (configurable to PostgreSQL/MySQL)
+- Database: PostgreSQL
 - ORM: SQLAlchemy
 - Migrations: Alembic
 - Testing: pytest
@@ -43,8 +44,8 @@ To install and set up the Epic Events CLI application on your local machine, fol
 2. Set up a virtual environment:
 
     ```bash
-    python3 -m venv env
-    source env/bin/activate  # On Windows, use `env\Scripts\activate`
+    python3 -m venv venv
+    source venv/bin/activate  # On Windows, use `env\Scripts\activate`
     ```
 
 3. Install dependencies:
@@ -53,8 +54,22 @@ To install and set up the Epic Events CLI application on your local machine, fol
     pip install -r requirements.txt
     ```
 
-4. Set up the database 
-    
+4. Set up the database:
+    create your database and ensure your .env file is correctly configured to connect to the database
+    ```bash
+    DATABASE_URL= "your_database_url"
+    ```
+
+    you need to run the command to initialize the database with the tables and roles-permissions.
+    ```bash
+    python scripts/init_db.py
+    ```
+    There is a superuser that allows you to create the first collaborator. 
+    The superuser credentials are provided separately as secrets to be placed in the .env file:
+
+            SUPER_USER
+            SUPER_USER_PASSWORD
+            SUPER_USER_EMAIL
 
 5. Run the CLI application:
 
@@ -80,12 +95,14 @@ Below is a list of the primary commands available in the Epic Events CLI:
         update-client: Update existing client information.
         list-clients: List all clients.
         delete-client: Delete a client.
+
 - Contract Commands:
 
         add-contract: Create a new contract.
         update-contract: Update an existing contract.
         list-contracts: List all contracts.
         delete-contract: Delete a contract.
+
 - Event Commands:
 
         add-event: Schedule a new event.
@@ -96,6 +113,7 @@ Below is a list of the primary commands available in the Epic Events CLI:
 - Authentication Commands:
 
         login: Log in to the system with your credentials.
+        logout
 
 
 ## Testing
@@ -104,10 +122,12 @@ The project includes tests to ensure that the CLI functions as expected. To run 
 ```bash
 pytest
 ```
+Make sure your virtual environment is activated and that all dependencies are installed before running the tests. 
 
 ## Code coverage
 ```bash
 pytest --cov
 ```
 
-Make sure your virtual environment is activated and that all dependencies are installed before running the tests.
+## Schema
+![crm_db Schema-ERD](schema_db.png)

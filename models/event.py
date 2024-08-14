@@ -4,6 +4,29 @@ from config.database import Base
 
 
 class Event(Base):
+    """
+    Represents an event in the system.
+
+    Attributes:
+        id (int): The unique identifier of the event.
+        client_id (int): The ID of the client associated with the event.
+        contract_id (int): The ID of the contract associated with the event.
+        description (str): The description of the event.
+        date_start (datetime): The start date and time of the event.
+        date_end (datetime): The end date and time of the event.
+        collaborator_support_id (int): The ID of the collaborator
+        providing support for the event.
+        location (str): The location of the event.
+        attendees (int): The number of attendees for the event.
+        notes (str): Additional notes for the event.
+
+    Relationships:
+        client (Client): The client associated with the event.
+        contract (Contract): The contract associated with the event.
+        collaborator_support (Collaborator): The collaborator providing
+        support for the event.
+    """
+
     __tablename__ = "events"
     id = Column(Integer, primary_key=True, autoincrement=True)
     client_id = Column(Integer, ForeignKey("clients.id"), nullable=False)
@@ -19,7 +42,7 @@ class Event(Base):
     notes = Column(String, nullable=True)
 
     client = relationship("Client", back_populates="events")
-    contract = relationship("Contract", back_populates="events")
+    contract = relationship("Contract", back_populates="event")
     collaborator_support = relationship("Collaborator", back_populates="events")
 
     def save(self, session):

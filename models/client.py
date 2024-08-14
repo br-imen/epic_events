@@ -5,6 +5,25 @@ from config.database import Base
 
 
 class Client(Base):
+    """
+    Represents a client in the system.
+
+    Attributes:
+        id (int): The primary key for the client.
+        full_name (str): The full name of the client.
+        email (str): The email address of the client.
+        phone_number (str): The phone number of the client.
+        company_name (str): The company name associated with the client.
+        creation_date (datetime): The date when the client record was created.
+        last_contact (datetime): The date when the client was last contacted.
+        commercial_collaborator_id (int): Foreign key referencing
+        the collaborator responsible for this client.
+        collaborator (Collaborator): The collaborator associated with the client.
+        contracts (list of Contract): A list of contracts associated
+        with the client.
+        events (list of Event): A list of events associated with the client.
+    """
+
     __tablename__ = "clients"
 
     id = Column(Integer, primary_key=True, index=True)

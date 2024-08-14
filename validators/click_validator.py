@@ -11,8 +11,22 @@ from models.contract import Contract
 from models.event import Event
 
 
+# Validates an email address format.
 def validate_email(ctx, param, value):
-    # Simple regex for validating an email address
+    """
+    Validates the format of an email address.
+
+    Args:
+        ctx (click.Context): The click context.
+        param (click.Parameter): The click parameter.
+        value (str): The value to be validated.
+
+    Raises:
+        click.BadParameter: If the email address format is invalid.
+
+    Returns:
+        str: The validated email address.
+    """
     if not re.match(r"^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$", value):
         raise click.BadParameter("Invalid email address format")
     return value
@@ -20,6 +34,17 @@ def validate_email(ctx, param, value):
 
 # Validate_phone_number
 def validate_phone_number(ctx, param, value):
+    """
+    Validates the format of a phone number.
+    Args:
+        ctx (click.Context): The click context.
+        param (click.Parameter): The click parameter.
+        value (str): The phone number to validate.
+    Returns:
+        str: The validated phone number.
+    Raises:
+        click.BadParameter: If the phone number has an invalid format.
+    """
     if not re.match(r"^(\+33|0)\d{9}$", value):
         raise click.BadParameter("Invalid phone number format")
     return value
@@ -27,6 +52,21 @@ def validate_phone_number(ctx, param, value):
 
 # Validate bool input status:
 def validate_boolean(ctx, param, value):
+    """
+    Validates a boolean value.
+
+    Args:
+        ctx (click.Context): The click context.
+        param (click.Parameter): The click parameter.
+        value (Any): The value to be validated.
+
+    Returns:
+        bool: The validated boolean value.
+
+    Raises:
+        click.BadParameter: If the value is not a valid boolean.
+
+    """
     if isinstance(value, str):
         value = value.lower()
         if value in ["true", "t", "yes", "y", "1"]:
@@ -40,7 +80,23 @@ def validate_boolean(ctx, param, value):
     return value
 
 
+# Validates that a client is associated with the logged-in sales collaborator.
 def validate_client_by_sales(ctx, param, value):
+    """
+    Validates if the client is associated with the salesperson's account.
+
+    Args:
+        ctx (object): The click context object.
+        param (str): The parameter name.
+        value (int): The client ID.
+
+    Returns:
+        int: The validated client ID.
+
+    Raises:
+        click.BadParameter: If the client is not associated with the salesperson's
+        account.
+    """
     session = SessionLocal()
     client = Client.get_by_id(value, session)
     login_collaborator = get_login_collaborator(session=session)
@@ -50,7 +106,22 @@ def validate_client_by_sales(ctx, param, value):
     return value
 
 
+# Validates that the amount due is less than or equal to the total amount.
 def validate_amount(ctx, param, value):
+    """
+    Validate the amount due against the total amount.
+
+    Args:
+        ctx (click.Context): The click context object.
+        param (click.Parameter): The click parameter object.
+        value (float): The amount due.
+
+    Returns:
+        float: The validated amount due.
+
+    Raises:
+        click.BadParameter: If the amount due is greater than the total amount.
+    """
     total_amount = ctx.params.get("total_amount")
     if value > total_amount:
         raise click.BadParameter(
@@ -60,6 +131,21 @@ def validate_amount(ctx, param, value):
 
 
 def validate_date(ctx, param, value):
+    """
+    Validate the date parameter.
+
+    Args:
+        ctx (click.Context): The click context.
+        param (click.Parameter): The click parameter.
+        value (str): The value to be validated.
+
+    Returns:
+        str: The validated date value.
+
+    Raises:
+        click.BadParameter: If the date is not in the correct format or if
+        it is in the past.
+    """
     try:
         date_format = "%Y-%m-%d %H:%M"
         date = datetime.strptime(value, date_format)
@@ -70,7 +156,22 @@ def validate_date(ctx, param, value):
         raise click.BadParameter("Date must be in the format yyyy-mm-dd HH:MM")
 
 
+# Validates that the end date is after the start date.
 def validate_end_date(ctx, param, value):
+    """
+    Validate the end date parameter.
+
+    Args:
+        ctx (click.Context): The click context.
+        param (click.Parameter): The click parameter.
+        value (str): The value of the end date.
+
+    Returns:
+        str: The validated end date.
+
+    Raises:
+        click.BadParameter: If the end date is before the start date.
+    """
     validate_date(ctx, param, value)
     date_start = ctx.params.get("date_start")
     date_start = datetime.strptime(date_start, "%Y-%m-%d %H:%M")
@@ -80,7 +181,22 @@ def validate_end_date(ctx, param, value):
     return value
 
 
+# Validates that the number of attendees is a positive integer.
 def validate_attendees(ctx, param, value):
+    """
+    Validate the number of attendees.
+
+    Args:
+        ctx (click.Context): The click context.
+        param (click.Parameter): The click parameter.
+        value (str): The value to be validated.
+
+    Returns:
+        int: The validated number of attendees.
+
+    Raises:
+        click.BadParameter: If the value is not a positive integer.
+    """
     try:
         int(value)
     except ValueError:
@@ -90,7 +206,22 @@ def validate_attendees(ctx, param, value):
     return value
 
 
+# Validates that a client exists in the database.
 def validate_client(ctx, param, value):
+    """
+    Validate the client ID provided.
+
+    Args:
+        ctx (click.Context): The click context.
+        param (click.Parameter): The click parameter.
+        value: The value of the client ID.
+
+    Returns:
+        The validated client ID.
+
+    Raises:
+        click.BadParameter: If the client ID is not found.
+    """
     session = SessionLocal()
     client = Client.get_by_id(value, session)
     session.close()
@@ -99,7 +230,22 @@ def validate_client(ctx, param, value):
     return value
 
 
+# Validates that an event exists in the database.
 def validate_event_id(ctx, param, value):
+    """
+    Validate the event ID by checking if it exists in the database.
+
+    Args:
+        ctx (click.Context): The click context.
+        param (click.Parameter): The click parameter.
+        value: The value of the event ID.
+
+    Returns:
+        The validated event ID.
+
+    Raises:
+        click.BadParameter: If the event is not found in the database.
+    """
     session = SessionLocal()
     event = Event.get_by_id(value, session)
     if not event:
@@ -108,7 +254,9 @@ def validate_event_id(ctx, param, value):
     return value
 
 
+# Validates that the logged-in support collaborator is assigned to the event.
 def validate_event_assigned_to_support_id(ctx, param, value):
+    
     session = SessionLocal()
     login_collaborator = get_login_collaborator(session)
     event = Event.get_by_id(value, session)
@@ -120,6 +268,7 @@ def validate_event_assigned_to_support_id(ctx, param, value):
     return value
 
 
+# Validates that a collaborator exists in the database.
 def validate_collaborator(ctx, param, value):
     session = SessionLocal()
     collaborator = Collaborator.get_by_id(value, session)
@@ -129,6 +278,7 @@ def validate_collaborator(ctx, param, value):
     return value
 
 
+# Validates that a collaborator is a sales role.
 def validate_commercial(ctx, param, value):
     session = SessionLocal()
     collaborator = Collaborator.get_by_id(value, session)
@@ -138,6 +288,7 @@ def validate_commercial(ctx, param, value):
     return value
 
 
+# Validates that a contract exists in the database.
 def validate_contract(ctx, param, value):
     session = SessionLocal()
     found_contract = Contract.get_by_id(value, session)
@@ -147,6 +298,7 @@ def validate_contract(ctx, param, value):
     return value
 
 
+# Validates that a contract exists and is signed.
 def validate_contract_id(ctx, param, value):
     session = SessionLocal()
     found_contract = Contract.get_by_id(value, session)
@@ -158,6 +310,7 @@ def validate_contract_id(ctx, param, value):
     return value
 
 
+# Validates that the logged-in collaborator is associated with the contract.
 def validate_contract_by_collaborator(ctx, param, value):
     session = SessionLocal()
     found_contract = Contract.get_by_id(value, session)
@@ -170,6 +323,7 @@ def validate_contract_by_collaborator(ctx, param, value):
     return value
 
 
+#  Validates that a role exists in the database.
 def validate_role(ctx, param, value):
     session = SessionLocal()
     client = Role.get_by_id(value, session)
@@ -179,6 +333,7 @@ def validate_role(ctx, param, value):
     return value
 
 
+# Validates that a collaborator is a support role.
 def validate_support(ctx, param, value):
     session = SessionLocal()
     collaborator = Collaborator.get_by_id(value, session)
@@ -188,6 +343,7 @@ def validate_support(ctx, param, value):
     return value
 
 
+# Validates that an employee number exists in the database.
 def validate_employee_number(ctx, param, value):
     session = SessionLocal()
     collaborator = Collaborator.get_by_employee_number(value, session)

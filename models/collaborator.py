@@ -14,12 +14,21 @@ from config.database import Base
 
 
 class RoleEnum(enum.Enum):
+    """
+    Enum representing the different roles available in the system.
+
+    Attributes:
+        sales (str): Represents the sales role.
+        support (str): Represents the support role.
+        management (str): Represents the management role.
+    """
+
     sales = "sales"
     support = "support"
     management = "management"
 
 
-# Association table for Role and Permission
+# Association table for the many-to-many relationship between roles and permissions.
 role_permissions = Table(
     "role_permissions",
     Base.metadata,
@@ -29,6 +38,18 @@ role_permissions = Table(
 
 
 class Role(Base):
+    """
+    Represents a role within the system.
+
+    Attributes:
+        id (int): The primary key for the role.
+        name (RoleEnum): The name of the role, using the RoleEnum enum.
+        collaborators (list of Collaborator): A list of collaborators associated
+        with the role.
+        permissions (list of Permission): A list of permissions associated
+        with the role.
+    """
+
     __tablename__ = "roles"
 
     id = Column(Integer, primary_key=True)
@@ -66,6 +87,16 @@ class Role(Base):
 
 
 class Permission(Base):
+    """
+    Represents a permission within the system.
+
+    Attributes:
+        id (int): The primary key for the permission.
+        name (str): The name of the permission, which must be unique and not null.
+        roles (list of Role): A list of roles associated with this permission,
+        using a many-to-many relationship.
+    """
+
     __tablename__ = "permissions"
     id = Column(Integer, primary_key=True)
     name = Column(String, unique=True, nullable=False)
@@ -80,6 +111,17 @@ class Permission(Base):
 
     @classmethod
     def get_or_create(cls, session, name):
+        """
+        Retrieves a permission by name, or creates it if it doesn't exist.
+
+        Args:
+            session (Session): The SQLAlchemy session object used to interact
+            with the database.
+            name (str): The name of the permission to retrieve or create.
+
+        Returns:
+            Permission: The existing or newly created permission instance.
+        """
         instance = session.query(cls).filter_by(name=name).first()
         if instance:
             return instance
@@ -97,6 +139,24 @@ class Permission(Base):
 
 
 class Collaborator(Base):
+    """
+    Represents a collaborator (employee) in the system.
+
+    Attributes:
+        id (int): The primary key for the collaborator.
+        employee_number (int): The unique employee number of the collaborator.
+        name (str): The full name of the collaborator.
+        email (str): The email address of the collaborator.
+        role_id (int): Foreign key referencing the role of the collaborator.
+        password (str): The hashed password of the collaborator.
+        contracts (list of Contract): A list of contracts associated with
+        the collaborator.
+        events (list of Event): A list of events where the collaborator
+        provided support.
+        clients (list of Client): A list of clients managed by the collaborator.
+        role (Role): The role assigned to the collaborator.
+    """
+
     __tablename__ = "collaborators"
     id = Column(Integer, primary_key=True)
     employee_number = Column(Integer, index=True, unique=True)
