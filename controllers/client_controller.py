@@ -16,6 +16,18 @@ from views.client_view import (
 
 
 def create_client_controller(full_name, email, phone_number, company_name):
+    """
+    Create a new client with the given information.
+
+    Args:
+        full_name (str): The full name of the client.
+        email (str): The email address of the client.
+        phone_number (str): The phone number of the client.
+        company_name (str): The name of the client's company.
+
+    Returns:
+        None
+    """
     session = SessionLocal()
     collaborator = get_login_collaborator(session=session)
     commercial_collaborator_id = collaborator.id
@@ -43,6 +55,19 @@ def create_client_controller(full_name, email, phone_number, company_name):
 
 
 def update_client_controller(id, full_name, email, phone_number, company_name):
+    """
+    Update a client's information in the database.
+
+    Args:
+        id (int): The ID of the client.
+        full_name (str): The full name of the client.
+        email (str): The email address of the client.
+        phone_number (str): The phone number of the client.
+        company_name (str): The name of the client's company.
+
+    Returns:
+        None
+    """
     session = SessionLocal()
     client_data = {
         "id": id,
@@ -62,6 +87,15 @@ def update_client_controller(id, full_name, email, phone_number, company_name):
 
 
 def delete_client_controller(client_id):
+    """
+    Deletes a client from the database.
+
+    Args:
+        client_id (int): The ID of the client to be deleted.
+
+    Returns:
+        None
+    """
     data = {"client_id": client_id}
     validated_data = validate_delete_client_input(**data)
     session = SessionLocal()
@@ -76,6 +110,13 @@ def delete_client_controller(client_id):
 
 
 def list_clients_controller():
+    """
+    Retrieves a list of clients from the database and returns the view for
+    displaying the list.
+
+    Returns:
+        list: The view for displaying the list of clients.
+    """
     session = SessionLocal()
     try:
         clients = Client.get_all(session)

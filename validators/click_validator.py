@@ -285,6 +285,20 @@ def validate_event_assigned_to_support_id(ctx, param, value):
 
 # Validates that a collaborator exists in the database.
 def validate_collaborator(ctx, param, value):
+    """
+    Validate the collaborator by checking if it exists in the database.
+
+    Args:
+        ctx: The click context.
+        param: The click parameter.
+        value: The value of the collaborator ID.
+
+    Returns:
+        The validated collaborator ID.
+
+    Raises:
+        click.BadParameter: If the collaborator is not found in the database.
+    """
     session = SessionLocal()
     collaborator = Collaborator.get_by_id(value, session)
     session.close()
@@ -295,6 +309,20 @@ def validate_collaborator(ctx, param, value):
 
 # Validates that a collaborator is a sales role.
 def validate_commercial(ctx, param, value):
+    """
+    Validate the commercial parameter.
+
+    Args:
+        ctx (click.Context): The click context.
+        param (click.Parameter): The click parameter.
+        value: The value of the parameter.
+
+    Returns:
+        The validated value.
+
+    Raises:
+        click.BadParameter: If the commercial is not found or has an invalid role.
+    """
     session = SessionLocal()
     collaborator = Collaborator.get_by_id(value, session)
     if not collaborator or str(collaborator.role) != "sales":
@@ -305,6 +333,20 @@ def validate_commercial(ctx, param, value):
 
 # Validates that a contract exists in the database.
 def validate_contract(ctx, param, value):
+    """
+    Validates the contract by checking if it exists in the database.
+
+    Args:
+        ctx: The click context object.
+        param: The click parameter object.
+        value: The value of the contract ID to be validated.
+
+    Returns:
+        The validated contract ID.
+
+    Raises:
+        click.BadParameter: If the contract is not found in the database.
+    """
     session = SessionLocal()
     found_contract = Contract.get_by_id(value, session)
     session.close()
@@ -315,6 +357,20 @@ def validate_contract(ctx, param, value):
 
 # Validates that a contract exists and is signed.
 def validate_contract_id(ctx, param, value):
+    """
+    Validates the contract ID.
+
+    Args:
+        ctx: The click context.
+        param: The click parameter.
+        value: The contract ID to be validated.
+
+    Returns:
+        The validated contract ID.
+
+    Raises:
+        click.BadParameter: If the contract is not found or is not signed.
+    """
     session = SessionLocal()
     found_contract = Contract.get_by_id(value, session)
     session.close()
@@ -327,6 +383,21 @@ def validate_contract_id(ctx, param, value):
 
 # Validates that the logged-in collaborator is associated with the contract.
 def validate_contract_by_collaborator(ctx, param, value):
+    """
+    Validates the contract by collaborator.
+
+    Args:
+        ctx (click.Context): The click context.
+        param (click.Parameter): The click parameter.
+        value: The contract value to be validated.
+
+    Returns:
+        The validated contract value.
+
+    Raises:
+        click.BadParameter: If the collaborator does not have
+        permission on the contract.
+    """
     session = SessionLocal()
     found_contract = Contract.get_by_id(value, session)
     validate_contract_id(ctx, param, value)
@@ -340,6 +411,20 @@ def validate_contract_by_collaborator(ctx, param, value):
 
 #  Validates that a role exists in the database.
 def validate_role(ctx, param, value):
+    """
+    Validate the role value.
+
+    Args:
+        ctx: The click context.
+        param: The click parameter.
+        value: The value to be validated.
+
+    Returns:
+        The validated role value.
+
+    Raises:
+        click.BadParameter: If the role is not found.
+    """
     session = SessionLocal()
     client = Role.get_by_id(value, session)
     session.close()
@@ -350,6 +435,20 @@ def validate_role(ctx, param, value):
 
 # Validates that a collaborator is a support role.
 def validate_support(ctx, param, value):
+    """
+    Validate if the given value corresponds to a valid support collaborator.
+
+    Args:
+        ctx (click.Context): The click context.
+        param (click.Parameter): The click parameter.
+        value: The value to be validated.
+
+    Returns:
+        The validated value.
+
+    Raises:
+        click.BadParameter: If the support collaborator is not found.
+    """
     session = SessionLocal()
     collaborator = Collaborator.get_by_id(value, session)
     if not collaborator or str(collaborator.role) != "support":
@@ -360,6 +459,20 @@ def validate_support(ctx, param, value):
 
 # Validates that an employee number exists in the database.
 def validate_employee_number(ctx, param, value):
+    """
+    Validates the employee number by checking if it exists in the database.
+
+    Args:
+        ctx: The click context object.
+        param: The click parameter object.
+        value: The value of the employee number to be validated.
+
+    Returns:
+        The validated employee number.
+
+    Raises:
+        click.BadParameter: If the employee number is not found in the database.
+    """
     session = SessionLocal()
     collaborator = Collaborator.get_by_employee_number(value, session)
     if not collaborator:

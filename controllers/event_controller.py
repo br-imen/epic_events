@@ -29,6 +29,23 @@ def create_event_controller(
     attendees,
     notes,
 ):
+    """
+    Create a new event.
+
+    Args:
+        contract_id (int): The ID of the contract associated with the event.
+        description (str): The description of the event.
+        date_start (datetime): The start date and time of the event.
+        date_end (datetime): The end date and time of the event.
+        collaborator_support_id (int): The ID of the collaborator
+        providing support for the event.
+        location (str): The location of the event.
+        attendees (list): The list of attendees for the event.
+        notes (str): Additional notes for the event.
+
+    Returns:
+        None
+    """
     session = SessionLocal()
     client_id = (
         Contract.get_by_id(contract_id, session).client_id if contract_id else None
@@ -71,6 +88,26 @@ def update_event_controller(
     attendees=None,
     notes=None,
 ):
+    """
+    Update an event with the given parameters.
+
+    Args:
+        id (int): The ID of the event to be updated.
+        contract_id (int, optional): The ID of the contract
+        associated with the event.
+        description (str, optional): The updated description of the event.
+        date_start (datetime, optional): The updated start
+        date and time of the event.
+        date_end (datetime, optional): The updated end date and time of the event.
+        collaborator_support_id (int, optional): The ID of the collaborator
+        providing support for the event.
+        location (str, optional): The updated location of the event.
+        attendees (List[str], optional): The updated list of attendees for the event.
+        notes (str, optional): The updated notes for the event.
+
+    Returns:
+        None
+    """
     session = SessionLocal()
     # client = Contract.get_by_id(contract_id, session)
     client_id = (
@@ -114,6 +151,15 @@ def update_event_controller(
 
 
 def delete_event_controller(id):
+    """
+    Deletes an event with the given ID.
+
+    Args:
+        id (int): The ID of the event to be deleted.
+
+    Returns:
+        None
+    """
     data = {"id": id}
     validated_data = validate_delete_event_input(**data)
     if validated_data:
@@ -130,6 +176,15 @@ def delete_event_controller(id):
 
 
 def list_events_controller(filters):
+    """
+    Retrieve a list of events based on the provided filters.
+
+    Args:
+        filters (dict): A dictionary containing filters to apply to the event list.
+
+    Returns:
+        list: A list of events that match the provided filters.
+    """
     session = SessionLocal()
     login_collaborator = get_login_collaborator(session)
     try:

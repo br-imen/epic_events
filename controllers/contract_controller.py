@@ -21,7 +21,19 @@ from views.contract_view import (
 def create_contract_controller(
     client_id, commercial_collaborator_id, total_amount, amount_due, status
 ):
+    """
+    Create a new contract.
 
+    Args:
+        client_id (int): The ID of the client.
+        commercial_collaborator_id (int): The ID of the commercial collaborator.
+        total_amount (float): The total amount of the contract.
+        amount_due (float): The amount due for the contract.
+        status (str): The status of the contract.
+
+    Returns:
+        None
+    """
     contract_data = {
         "client_id": client_id,
         "commercial_collaborator_id": commercial_collaborator_id,
@@ -41,6 +53,15 @@ def create_contract_controller(
 
 
 def list_contracts_controller(filters):
+    """
+    Retrieve a list of contracts based on the provided filters.
+
+    Args:
+        filters (dict): A dictionary containing filters to apply to the query.
+
+    Returns:
+        list: A list of contracts matching the provided filters.
+    """
     session = SessionLocal()
     try:
         contracts = Contract.get_all(session, filters)
@@ -50,6 +71,15 @@ def list_contracts_controller(filters):
 
 
 def delete_contract_controller(contract_id):
+    """
+    Deletes a contract based on the given contract ID.
+
+    Args:
+        contract_id (int): The ID of the contract to be deleted.
+
+    Returns:
+        None
+    """
     data = {"id": contract_id}
     validated_data = validate_delete_contract_input(**data)
     if validated_data:
@@ -68,6 +98,21 @@ def delete_contract_controller(contract_id):
 def update_contract_controller(
     id, client_id, commercial_collaborator_id, total_amount, amount_due, status
 ):
+    """
+    Update a contract with the provided data.
+
+    Args:
+        id (int): The ID of the contract to be updated.
+        client_id (int): The ID of the client associated with the contract.
+        commercial_collaborator_id (int): The ID of the commercial collaborator
+        associated with the contract.
+        total_amount (float): The total amount of the contract.
+        amount_due (float): The amount due for the contract.
+        status (bool): The status of the contract.
+
+    Returns:
+        None
+    """
     contract_data = {
         "id": id,
         "client_id": client_id,

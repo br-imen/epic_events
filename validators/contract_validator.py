@@ -5,6 +5,16 @@ from views.contract_view import validation_error_contract_view
 
 
 class ContractInput(BaseModel):
+    """
+    Represents the input data for a contract.
+    Attributes:
+        client_id (int): The ID of the client.
+        commercial_collaborator_id (int): The ID of the commercial collaborator.
+        total_amount (Decimal): The total amount of the contract.
+        amount_due (Decimal): The amount due for the contract.
+        status (bool): The status of the contract.
+    """
+
     client_id: int
     commercial_collaborator_id: int
     total_amount: Decimal
@@ -13,6 +23,18 @@ class ContractInput(BaseModel):
 
 
 class ContractUpdateInput(BaseModel):
+    """
+    Represents the input data for updating a contract.
+    Attributes:
+        id (int): The ID of the contract.
+        client_id (int): The ID of the client associated with the contract.
+        commercial_collaborator_id (int): The ID of the commercial collaborator
+        associated with the contract.
+        total_amount (Decimal): The total amount of the contract.
+        amount_due (Decimal): The amount due for the contract.
+        status (bool): The status of the contract.
+    """
+
     id: int
     client_id: int
     commercial_collaborator_id: int
@@ -22,10 +44,28 @@ class ContractUpdateInput(BaseModel):
 
 
 class ContractDeleteInput(BaseModel):
+    """
+    Represents the input data for deleting a contract.
+    Attributes:
+        id (int): The ID of the contract to be deleted.
+    """
     id: int
 
 
 def validate_create_contract_input(**kwargs):
+    """
+    Validates the input for creating a contract.
+
+    Args:
+        **kwargs: Keyword arguments representing the contract input fields.
+
+    Returns:
+        ContractInput: The validated contract input.
+
+    Raises:
+        ValidationError: If the input fails validation.
+
+    """
     try:
         user_input = ContractInput(**kwargs)
         return user_input
@@ -34,6 +74,19 @@ def validate_create_contract_input(**kwargs):
 
 
 def validate_delete_contract_input(**kwargs):
+    """
+    Validates the input for deleting a contract.
+
+    Args:
+        **kwargs: Keyword arguments representing the input parameters for
+        deleting a contract.
+
+    Returns:
+        ContractDeleteInput: The validated input for deleting a contract.
+
+    Raises:
+        ValidationError: If the input parameters are invalid.
+    """
     try:
         user_input = ContractDeleteInput(**kwargs)
         return user_input
@@ -42,6 +95,18 @@ def validate_delete_contract_input(**kwargs):
 
 
 def validate_update_contract_input(**kwargs):
+    """
+    Validates the input for updating a contract.
+
+    Args:
+        **kwargs: Keyword arguments representing the contract update input.
+
+    Returns:
+        ContractUpdateInput: The validated contract update input.
+
+    Raises:
+        ValidationError: If the input is invalid.
+    """
     try:
         user_input = ContractUpdateInput(**kwargs)
         return user_input

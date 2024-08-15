@@ -20,6 +20,19 @@ from config.database import SessionLocal
 
 
 def create_collaborator_controller(employee_number, name, email, role_id, password):
+    """
+    Create a new collaborator.
+
+    Args:
+        employee_number (int): The employee number of the collaborator.
+        name (str): The name of the collaborator.
+        email (str): The email address of the collaborator.
+        role_id (int): The role ID of the collaborator.
+        password (str): The password of the collaborator.
+
+    Returns:
+        None
+    """
     collaborator_data = {
         "employee_number": employee_number,
         "name": name,
@@ -39,6 +52,19 @@ def create_collaborator_controller(employee_number, name, email, role_id, passwo
 
 
 def update_collaborator_controller(employee_number, name, email, role_id, password):
+    """
+    Update a collaborator with the given employee number.
+
+    Args:
+        employee_number (int): The employee number of the collaborator.
+        name (str): The name of the collaborator.
+        email (str): The email of the collaborator.
+        role_id (int): The role ID of the collaborator.
+        password (str): The password of the collaborator.
+
+    Returns:
+        None
+    """
     collaborator_data = {
         "employee_number": employee_number,
         "name": name,
@@ -64,6 +90,15 @@ def update_collaborator_controller(employee_number, name, email, role_id, passwo
 
 
 def delete_collaborator_controller(employee_number):
+    """
+    Deletes a collaborator with the given employee number.
+
+    Args:
+        employee_number (int): The employee number of the collaborator to be deleted.
+
+    Returns:
+        None
+    """
     data = {"employee_number": employee_number}
     validated_data = validate_delete_collaborator_input(**data)
     if validated_data:
@@ -82,6 +117,13 @@ def delete_collaborator_controller(employee_number):
 
 
 def list_collaborators_controller():
+    """
+    Retrieves a list of collaborators from the database and returns the view
+    for displaying the list.
+
+    Returns:
+        list: The view for displaying the list of collaborators.
+    """
     session = SessionLocal()
     try:
         collaborators = Collaborator.get_all(session)
@@ -92,6 +134,19 @@ def list_collaborators_controller():
 
 # Controller to check collaborator email and create token if True
 def authentication(email, password):
+    """
+    Authenticates a collaborator using the provided email and password.
+
+    Args:
+        email (str): The email of the collaborator.
+        password (str): The password of the collaborator.
+
+    Returns:
+        dict or None: A dictionary containing the access token and token type
+        if the authentication is successful,
+        None otherwise.
+    """
+
     login_data = {"email": email, "password": password}
     validated_login_data = validate_login_input(**login_data)
     if validated_login_data:
@@ -116,6 +171,10 @@ def authentication(email, password):
 
 # Logout
 def logout_controller():
+    """
+    Logs out the user by deleting the access token file.
+    """
+
     # Define the path to the token file
     config_dir = os.path.join(os.path.expanduser("~"), ".config", "epic_events")
     token_path = os.path.join(config_dir, "access_token.txt")

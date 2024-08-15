@@ -61,9 +61,28 @@ load_dotenv()
 
 # Custom Click parameter type for validating non-negative decimal inputs.
 class DecimalType(click.ParamType):
+    """
+    Custom parameter type for handling decimal values.
+    """
+
     name = "decimal"
 
     def convert(self, value, param, ctx):
+        """
+        Converts the input value to a Decimal object.
+
+        Args:
+            value (str): The input value to be converted.
+            param (click.Parameter): The parameter object.
+            ctx (click.Context): The click context object.
+
+        Returns:
+            Decimal: The converted Decimal object.
+
+        Raises:
+            click.BadParameter: If the value is not a non-negative decimal or not
+            a valid decimal.
+        """
         try:
             dec_value = Decimal(value)
             if dec_value < 0:
@@ -78,6 +97,10 @@ DECIMAL = DecimalType()
 
 # Create a custom Click context to store the subcommand name
 class CustomContext(click.Context):
+    """
+    Custom context class for handling click commands.
+    """
+
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.subcommand = None
@@ -86,8 +109,16 @@ class CustomContext(click.Context):
 # Custom Click group that enforces authentication and permission checks
 # before executing subcommands.
 class AuthGroup(click.Group):
+    """
+    A custom click Group class that handles authentication and permission
+    checks before invoking commands.
+    """
 
     def invoke(self, ctx):
+        """
+        Overrides the invoke method of the click.Group class.
+        Performs authentication and permission checks before invoking commands.
+        """
         session = SessionLocal()
         ctx.invoked_subcommand = (
             ctx.protected_args[0] if ctx.protected_args else None
@@ -117,6 +148,12 @@ class AuthGroup(click.Group):
 
 @click.group(cls=AuthGroup)
 def cli():
+    """
+    This function represents the command-line interface for the Epic Events
+    application.
+    It serves as the entry point for executing various commands and interacting with
+    the application.
+    """
     pass
 
 
