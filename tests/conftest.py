@@ -1,14 +1,18 @@
-import pytest
-from unittest.mock import MagicMock
-from sqlalchemy import create_engine
-from sqlalchemy.orm import sessionmaker
-from config.database import Base
-from models.client import Client
-from models.collaborator import Collaborator, Role
-from unittest.mock import patch
-from click.testing import CliRunner
-from epic_events import AuthGroup
-from models.contract import Contract
+import os
+os.environ["DATABASE_URL"] = "sqlite:///./test.db"
+os.environ["ACCESS_TOKEN_EXPIRE_MINUTES"] = "60"
+
+import pytest  # noqa: E402
+from unittest.mock import MagicMock  # noqa: E402
+from sqlalchemy import create_engine  # noqa: E402
+from sqlalchemy.orm import sessionmaker  # noqa: E402
+from config.database import Base  # noqa: E402
+from models.client import Client  # noqa: E402
+from models.collaborator import Collaborator, Role  # noqa: E402
+from unittest.mock import patch  # noqa: E402
+from click.testing import CliRunner  # noqa: E402
+from epic_events import AuthGroup  # noqa: E402
+from models.contract import Contract  # noqa: E402
 
 
 # Configure the test database
