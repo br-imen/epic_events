@@ -1,4 +1,3 @@
-import os
 from unittest.mock import patch, mock_open
 from datetime import datetime, timedelta, timezone
 from config.auth import (
@@ -93,16 +92,11 @@ def test_create_access_token(mock_jwt_encode, mock_datetime_now, mock_os_makedir
             algorithm=ALGORITHM,
         )
         mock_os_makedirs.assert_called_once_with(
-            os.path.join(os.path.expanduser("~"), ".config", "epic_events"),
+            '~/tmp',
             exist_ok=True,
         )
         m.assert_called_once_with(
-            os.path.join(
-                os.path.expanduser("~"),
-                ".config",
-                "epic_events",
-                "access_token.txt",
-            ),
+            '~/tmp/access_token',
             "w",
         )
         m().write.assert_called_once_with(mock_encoded_token)

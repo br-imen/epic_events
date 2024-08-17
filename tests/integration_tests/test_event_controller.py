@@ -20,7 +20,6 @@ def test_create_event_controller(
             description="Test Event",
             date_start="2024-08-15 10:00:00",
             date_end="2024-08-15 12:00:00",
-            collaborator_support_id=collaborator.id,
             location="Conference Room",
             attendees=20,
             notes="Important meeting.",

@@ -99,10 +99,6 @@ def test_validate_create_event_valid(mock_validation_error):
     assert user_input.description == valid_create_event_data["description"]
     assert user_input.date_start == valid_create_event_data["date_start"]
     assert user_input.date_end == valid_create_event_data["date_end"]
-    assert (
-        user_input.collaborator_support_id
-        == valid_create_event_data["collaborator_support_id"]
-    )
     assert user_input.location == valid_create_event_data["location"]
     assert user_input.attendees == valid_create_event_data["attendees"]
     assert user_input.notes == valid_create_event_data["notes"]

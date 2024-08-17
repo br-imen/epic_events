@@ -5,7 +5,6 @@ from validators.contract_validator import (
     validate_update_contract_input,
 )
 from models.client import Client
-from models.collaborator import Collaborator
 from models.contract import Contract
 from views.contract_view import (
     error_client_collaborator_not_found_view,
@@ -19,14 +18,13 @@ from views.contract_view import (
 
 
 def create_contract_controller(
-    client_id, commercial_collaborator_id, total_amount, amount_due, status
+    client_id, total_amount, amount_due, status
 ):
     """
     Create a new contract.
 
     Args:
         client_id (int): The ID of the client.
-        commercial_collaborator_id (int): The ID of the commercial collaborator.
         total_amount (float): The total amount of the contract.
         amount_due (float): The amount due for the contract.
         status (str): The status of the contract.
@@ -36,7 +34,6 @@ def create_contract_controller(
     """
     contract_data = {
         "client_id": client_id,
-        "commercial_collaborator_id": commercial_collaborator_id,
         "total_amount": total_amount,
         "amount_due": amount_due,
         "status": status,
@@ -45,6 +42,9 @@ def create_contract_controller(
     if validate_data:
         session = SessionLocal()
         try:
+            client = Client.get_by_id(client_id, SessionLocal())
+            contract_data["commercial_collaborator_id"] = \
+                client.commercial_collaborator_id
             contract = Contract(**contract_data)
             contract.save(session)
             success_create_contract_view()
@@ -96,7 +96,7 @@ def delete_contract_controller(contract_id):
 
 
 def update_contract_controller(
-    id, client_id, commercial_collaborator_id, total_amount, amount_due, status
+    id, client_id, total_amount, amount_due, status
 ):
     """
     Update a contract with the provided data.
@@ -104,7 +104,6 @@ def update_contract_controller(
     Args:
         id (int): The ID of the contract to be updated.
         client_id (int): The ID of the client associated with the contract.
-        commercial_collaborator_id (int): The ID of the commercial collaborator
         associated with the contract.
         total_amount (float): The total amount of the contract.
         amount_due (float): The amount due for the contract.
@@ -116,7 +115,6 @@ def update_contract_controller(
     contract_data = {
         "id": id,
         "client_id": client_id,
-        "commercial_collaborator_id": commercial_collaborator_id,
         "total_amount": total_amount,
         "amount_due": amount_due,
         "status": status,
@@ -128,16 +126,15 @@ def update_contract_controller(
             contract = Contract.get_by_id(id, session=session)
             if contract:
                 found_client = Client.get_by_id(client_id, session)
-                found_commercial = Collaborator.get_by_id(
-                    commercial_collaborator_id, session
-                )
-
-                if found_client and found_commercial:
+                try:
+                    found_commercial_id = found_client.commercial_collaborator_id
+                    data = validated_data.dict()
+                    data["commercial_collaborator_id"] = found_commercial_id
                     contract.update(session, **validated_data.dict())
                     success_update_contract_view()
                     if contract_data["status"] is True:
                         success_signed_contract_view()
-                else:
+                except AttributeError:
                     error_client_collaborator_not_found_view()
             else:
                 error_contract_not_found_view()

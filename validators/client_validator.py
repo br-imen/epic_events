@@ -17,6 +17,7 @@ class ClientInputUpdate(BaseModel):
     email: EmailStr
     phone_number: str
     company_name: str
+    commercial_collaborator_id: str
 
 
 class ClientDeleteInput(BaseModel):

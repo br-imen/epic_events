@@ -57,8 +57,8 @@ def test_str():
         commercial_collaborator_id=2,
     )
     expected_output = (
-        "Client 1: foo Doe, Email: foo@example.com, Phone: 1234567890, "
-        "Company: ABC Corp, Created: 2022-01-01 00:00:00, "
-        "Last Contact: 2022-01-02 00:00:00, Commercial id: 2"
+        "Client id=1, name=foo Doe, Email= foo@example.com, Phone=1234567890, "
+        "Company=ABC Corp, Created=2022-01-01 00:00:00, Last Contact:=2022-01-02 "
+        "00:00:00, Commercial id=2 \n"
     )
     assert str(client) == expected_output

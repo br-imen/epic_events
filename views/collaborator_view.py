@@ -42,3 +42,7 @@ def error_collaborator_non_found_view():
 def success_update_collaborator_view():
     print("Collaborator updated")
     logging.info("Collaborator updated")
+
+
+def display_user_infos(user):
+    print(f"{user.name}: id={user.id}, email={user.email}, role={user.role_id}")

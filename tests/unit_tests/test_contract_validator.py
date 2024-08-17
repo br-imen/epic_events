@@ -54,10 +54,6 @@ def test_validate_create_contract_input_valid(mock_validation_error):
     # Test with valid data
     user_input = validate_create_contract_input(**valid_create_contract_data)
     assert user_input.client_id == valid_create_contract_data["client_id"]
-    assert (
-        user_input.commercial_collaborator_id
-        == valid_create_contract_data["commercial_collaborator_id"]
-    )
     assert user_input.total_amount == valid_create_contract_data["total_amount"]
     assert user_input.amount_due == valid_create_contract_data["amount_due"]
     assert user_input.status == valid_create_contract_data["status"]
@@ -94,10 +90,6 @@ def test_validate_update_contract_input_valid(mock_validation_error):
     user_input = validate_update_contract_input(**valid_update_contract_data)
     assert user_input.id == valid_update_contract_data["id"]
     assert user_input.client_id == valid_update_contract_data["client_id"]
-    assert (
-        user_input.commercial_collaborator_id
-        == valid_update_contract_data["commercial_collaborator_id"]
-    )
     assert user_input.total_amount == valid_update_contract_data["total_amount"]
     assert user_input.amount_due == valid_update_contract_data["amount_due"]
     assert user_input.status == valid_update_contract_data["status"]

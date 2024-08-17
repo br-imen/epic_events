@@ -1,9 +1,10 @@
 import os
+from dotenv import load_dotenv
 import jwt
 from datetime import datetime, timedelta, timezone
 
 from models.collaborator import Collaborator
-
+load_dotenv()
 # Load environment variables
 SECRET_KEY = os.getenv("SECRET_KEY")
 ALGORITHM = os.getenv("ALGORITHM")
@@ -18,9 +19,14 @@ def create_access_token(data: dict):
     )
     to_encode.update({"exp": expire})
     encoded_jwt = jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
-    config_dir = os.path.join(os.path.expanduser("~"), ".config", "epic_events")
-    os.makedirs(config_dir, exist_ok=True)
-    token_path = os.path.join(config_dir, "access_token.txt")
+
+    # config_dir = os.path.join(os.path.expanduser("~"), ".config", "epic_events")
+    # token_path = os.path.join(config_dir, "access_token.txt")
+
+    token_dir_path = os.getenv("TOKEN_DIR_PATH")
+    os.makedirs(token_dir_path, exist_ok=True)
+
+    token_path = os.path.join(token_dir_path, os.getenv("TOKEN_FILENAME"))
     with open(token_path, "w") as file:
         file.write(encoded_jwt)
     return encoded_jwt
@@ -45,6 +51,7 @@ def get_token_from_file():
     config_dir = os.path.join(os.path.expanduser("~"), ".config", "epic_events")
     token_path = os.path.join(config_dir, "access_token.txt")
 
+    token_path = os.path.join(os.getenv("TOKEN_DIR_PATH"), os.getenv("TOKEN_FILENAME"))
     if os.path.exists(token_path):
         with open(token_path, "r") as file:
             token = file.read().strip()

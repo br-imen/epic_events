@@ -35,6 +35,7 @@ valid_update_client_data = {
     "email": "namesurnameupdated@example.com",
     "phone_number": "+33123456789",
     "company_name": "Updated Corp",
+    "commercial_collaborator_id": "12345",
 }
 
 invalid_update_client_data = {

@@ -57,6 +57,7 @@ def test_update_client_controller(mock_session):
             "updated@example.com",
             "9876543210",
             "XYZ Company",
+            1,
         )
         mock_get_by_id.assert_called_once()
         mock_success_view.assert_called_once()

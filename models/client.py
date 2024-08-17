@@ -68,9 +68,12 @@ class Client(Base):
 
     def __str__(self):
         return (
-            f"Client {self.id}: {self.full_name}, Email: {self.email}, "
-            f"Phone: {self.phone_number}, "
-            f"Company: {self.company_name}, Created: {self.creation_date}, "
-            f"Last Contact: {self.last_contact}, "
-            f"Commercial id: {self.commercial_collaborator_id}"
+            f"Client id={self.id}, "
+            f"name={self.full_name}, "
+            f"Email= {self.email}, "
+            f"Phone={self.phone_number}, "
+            f"Company={self.company_name}, "
+            f"Created={self.creation_date}, "
+            f"Last Contact:={self.last_contact}, "
+            f"Commercial id={self.commercial_collaborator_id} \n"
         )

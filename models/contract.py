@@ -136,5 +136,5 @@ class Contract(Base):
             f"total_amount={self.total_amount}, "
             f"amount_due={self.amount_due}, "
             f"creation_date={self.creation_date}, "
-            f"status={'signed' if self.status else 'unsigned'}"
+            f"status={'signed' if self.status else 'unsigned'}  \n"
         )

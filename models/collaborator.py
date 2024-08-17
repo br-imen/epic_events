@@ -203,8 +203,11 @@ class Collaborator(Base):
 
     def __str__(self):
         return (
-            f"Collaborator {self.id}, employee_number={self.employee_number}, "
-            f"name={self.name}, email={self.email}, role={self.role_id})"
+            f"Collaborator id={self.id}, "
+            f"employee_number={self.employee_number}, "
+            f"name={self.name}, "
+            f"email={self.email}, "
+            f"role={str(self.role)})  \n"
         )
 
     @staticmethod

@@ -9,14 +9,12 @@ class ContractInput(BaseModel):
     Represents the input data for a contract.
     Attributes:
         client_id (int): The ID of the client.
-        commercial_collaborator_id (int): The ID of the commercial collaborator.
         total_amount (Decimal): The total amount of the contract.
         amount_due (Decimal): The amount due for the contract.
         status (bool): The status of the contract.
     """
 
     client_id: int
-    commercial_collaborator_id: int
     total_amount: Decimal
     amount_due: Decimal
     status: bool
@@ -37,7 +35,6 @@ class ContractUpdateInput(BaseModel):
 
     id: int
     client_id: int
-    commercial_collaborator_id: int
     total_amount: Decimal
     amount_due: Decimal
     status: bool

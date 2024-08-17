@@ -224,6 +224,10 @@ def validate_client(ctx, param, value):
     """
     session = SessionLocal()
     client = Client.get_by_id(value, session)
+    login_collaborator = get_login_collaborator(session)
+    if str(login_collaborator.role) == "sales":
+        if client.commercial_collaborator_id != login_collaborator.id:
+            raise click.BadParameter("You are alowed to choose only your clients")
     session.close()
     if not client:
         raise click.BadParameter("Client not found")
@@ -355,8 +359,54 @@ def validate_contract(ctx, param, value):
     return value
 
 
+def validate_existing_contract_id(ctx, param, value):
+    """
+    Validates the contract ID.
+
+    Args:
+        ctx: The click context.
+        param: The click parameter.
+        value: The contract ID to be validated.
+
+    Returns:
+        The validated contract ID.
+
+    Raises:
+        click.BadParameter: If the contract is not found.
+    """
+    session = SessionLocal()
+    found_contract = Contract.get_by_id(value, session)
+    session.close()
+    if not found_contract:
+        raise click.BadParameter("Contract not found")
+    return value
+
+
+def validate_contract_id_is_signed(ctx, param, value):
+    """
+    Validates the contract ID.
+
+    Args:
+        ctx: The click context.
+        param: The click parameter.
+        value: The contract ID to be validated.
+
+    Returns:
+        The validated contract ID.
+
+    Raises:
+        click.BadParameter: If the contract is not found.
+    """
+    session = SessionLocal()
+    found_contract = Contract.get_by_id(value, session)
+    session.close()
+    if not found_contract.status:
+        raise click.BadParameter("Contract must be signed")
+    return value
+
+
 # Validates that a contract exists and is signed.
-def validate_contract_id(ctx, param, value):
+def validate_contract_id_existing_is_signed(ctx, param, value):
     """
     Validates the contract ID.
 
@@ -371,13 +421,8 @@ def validate_contract_id(ctx, param, value):
     Raises:
         click.BadParameter: If the contract is not found or is not signed.
     """
-    session = SessionLocal()
-    found_contract = Contract.get_by_id(value, session)
-    session.close()
-    if not found_contract:
-        raise click.BadParameter("Contract not found")
-    if not found_contract.status:
-        raise click.BadParameter("Contract must be signed")
+    validate_existing_contract_id(ctx, param, value)
+    validate_contract_id_is_signed(ctx, param, value)
     return value
 
 
@@ -400,12 +445,33 @@ def validate_contract_by_collaborator(ctx, param, value):
     """
     session = SessionLocal()
     found_contract = Contract.get_by_id(value, session)
-    validate_contract_id(ctx, param, value)
+    validate_existing_contract_id(ctx, param, value)
     login_collaborator = get_login_collaborator(session)
     if str(login_collaborator.role) == "sales":
         if found_contract.commercial_collaborator_id != login_collaborator.id:
             raise click.BadParameter("You don't have permission on this contract")
     session.close()
+    return value
+
+
+def validate_contract_for_event(ctx, param, value):
+    """
+    Validates the contract by collaborator.
+
+    Args:
+        ctx (click.Context): The click context.
+        param (click.Parameter): The click parameter.
+        value: The contract value to be validated.
+
+    Returns:
+        The validated contract value.
+
+    Raises:
+        click.BadParameter: If the collaborator does not have
+        permission on the contract.
+    """
+    validate_contract_by_collaborator(ctx, param, value)
+    validate_contract_id_is_signed(ctx, param, value)
     return value
 
 

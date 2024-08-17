@@ -35,7 +35,7 @@ class Event(Base):
     date_start = Column(DateTime, nullable=False)
     date_end = Column(DateTime, nullable=False)
     collaborator_support_id = Column(
-        Integer, ForeignKey("collaborators.id"), nullable=False
+        Integer, ForeignKey("collaborators.id"), nullable=True
     )
     location = Column(String, nullable=False)
     attendees = Column(Integer, nullable=False)
@@ -64,7 +64,7 @@ class Event(Base):
     def get_all(session, filters, login_collaborator):
         events = session.query(Event)
         if "with_no_support" in filters:
-            events = events.filter(Event.collaborator_support_id is None)
+            events = events.filter(Event.collaborator_support_id.is_(None))
         if "assigned_to_me" in filters:
             events = events.filter(
                 Event.collaborator_support_id == login_collaborator.id
@@ -77,14 +77,14 @@ class Event(Base):
 
     def __str__(self):
         return (
-            f"Event {self.id} Details:\n"
-            f"Client ID: {self.client_id}\n"
-            f"Contract ID: {self.contract_id}\n"
-            f"Description: {self.description}\n"
-            f"Start Date: {self.date_start.strftime('%d-%m-%Y %I:%M %p')}\n"
-            f"End Date: {self.date_end.strftime('%d-%m-%Y %I:%M %p')}\n"
-            f"Collaborator support id : {self.collaborator_support_id}\n"
-            f"Location: {self.location}\n"
-            f"Attendees: {self.attendees}\n"
-            f"Notes: {self.notes if self.notes else 'None'}"
+            f"Event id={self.id}, Details= {self.description},"
+            f"Client ID={self.client_id}, "
+            f"Contract ID={self.contract_id}, "
+            f"Description={self.description}, "
+            f"Start Date={self.date_start.strftime('%d-%m-%Y %I:%M %p')}, "
+            f"End Date={self.date_end.strftime('%d-%m-%Y %I:%M %p')}, "
+            f"Collaborator support id={self.collaborator_support_id}, "
+            f"Location={self.location}, "
+            f"Attendees={self.attendees}, "
+            f"Notes={self.notes if self.notes else 'None'} \n"
         )

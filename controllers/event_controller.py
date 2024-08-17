@@ -24,7 +24,6 @@ def create_event_controller(
     description,
     date_start,
     date_end,
-    collaborator_support_id,
     location,
     attendees,
     notes,
@@ -37,7 +36,6 @@ def create_event_controller(
         description (str): The description of the event.
         date_start (datetime): The start date and time of the event.
         date_end (datetime): The end date and time of the event.
-        collaborator_support_id (int): The ID of the collaborator
         providing support for the event.
         location (str): The location of the event.
         attendees (list): The list of attendees for the event.
@@ -56,7 +54,6 @@ def create_event_controller(
         "description": description,
         "date_start": date_start,
         "date_end": date_end,
-        "collaborator_support_id": collaborator_support_id,
         "location": location,
         "attendees": attendees,
         "notes": notes,
@@ -64,9 +61,8 @@ def create_event_controller(
     validated_data = validate_create_event(**event_data)
     if validated_data:
         try:
-            found_support = Collaborator.get_by_id(collaborator_support_id, session)
             found_contract = Contract.get_by_id(contract_id, session)
-            if found_support and found_contract:
+            if found_contract:
                 if found_contract.status:
                     new_event = Event(**validated_data.dict())
                     new_event.save(session)

@@ -32,6 +32,7 @@ def test_update_client_integration(test_db, collaborator, client):
         "email": client.email,
         "phone_number": client.phone_number,
         "company_name": client.company_name,
+        "commercial_collaborator_id": collaborator.id,
     }
     with patch(
         "controllers.client_controller.get_login_collaborator",
@@ -78,5 +79,5 @@ def test_list_clients_integration(test_db, collaborator, client, capsys):
         # Ensure something was printed
         assert len(captured.out) > 0
         # Check that each client is printed as expected
-        expected_output = "Client 1: Foo floo, Email: foofloo@example.com"
+        expected_output = "Client id=1, name=Foo floo, Email= foofloo@example.com,"
         assert expected_output in str(captured.out)

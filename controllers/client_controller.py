@@ -54,7 +54,8 @@ def create_client_controller(full_name, email, phone_number, company_name):
             session.close()
 
 
-def update_client_controller(id, full_name, email, phone_number, company_name):
+def update_client_controller(id, full_name, email, phone_number,
+                             company_name, commercial_collaborator_id):
     """
     Update a client's information in the database.
 
@@ -64,6 +65,7 @@ def update_client_controller(id, full_name, email, phone_number, company_name):
         email (str): The email address of the client.
         phone_number (str): The phone number of the client.
         company_name (str): The name of the client's company.
+        commercial_collaborator_id (int): The ID of the collaborator responsible
 
     Returns:
         None
@@ -75,6 +77,7 @@ def update_client_controller(id, full_name, email, phone_number, company_name):
         "email": email,
         "phone_number": phone_number,
         "company_name": company_name,
+        "commercial_collaborator_id": commercial_collaborator_id,
     }
     validated_data = validate_update_client(**client_data)
     if validated_data:

@@ -1,5 +1,5 @@
 import os
-from config.auth import create_access_token
+from config.auth import create_access_token, get_login_collaborator
 from validators.collaborator_validator import (
     validate_collaborator_input,
     validate_delete_collaborator_input,
@@ -7,6 +7,7 @@ from validators.collaborator_validator import (
 )
 from models.collaborator import Collaborator
 from views.collaborator_view import (
+    display_user_infos,
     error_collaborator_non_found_view,
     success_delete_collaborator_view,
     success_login_view,
@@ -174,13 +175,24 @@ def logout_controller():
     """
     Logs out the user by deleting the access token file.
     """
-
-    # Define the path to the token file
-    config_dir = os.path.join(os.path.expanduser("~"), ".config", "epic_events")
-    token_path = os.path.join(config_dir, "access_token.txt")
-
+    token_dir_path = os.getenv("TOKEN_DIR_PATH")
+    token_path = os.path.join(token_dir_path, os.getenv("TOKEN_FILENAME"))
     # Check if the file exists
     if os.path.exists(token_path):
         # Delete the token file
         os.remove(token_path)
     success_logout_view()
+
+
+def whoami_controller():
+    """
+    Retrieves the name of the currently logged in collaborator.
+    """
+    try:
+        session = SessionLocal()
+        user = get_login_collaborator(session)
+        display_user_infos(user)
+    except FileNotFoundError:
+        return None
+    finally:
+        session.close()

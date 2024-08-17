@@ -14,7 +14,6 @@ def test_create_contract_controller(test_db: Session, client, collaborator, caps
     with patch("controllers.contract_controller.SessionLocal", return_value=test_db):
         create_contract_controller(
             client_id=client.id,
-            commercial_collaborator_id=collaborator.id,
             total_amount=10000.00,
             amount_due=5000.00,
             status=True,
@@ -86,7 +85,6 @@ def test_update_contract_controller(test_db: Session, client, collaborator, caps
     # Create a contract to update
     contract = Contract(
         client_id=client.id,
-        commercial_collaborator_id=collaborator.id,
         total_amount=25000.00,
         amount_due=15000.00,
         status=True,
@@ -97,7 +95,6 @@ def test_update_contract_controller(test_db: Session, client, collaborator, caps
         update_contract_controller(
             id=contract.id,
             client_id=client.id,
-            commercial_collaborator_id=collaborator.id,
             total_amount=25000.00,
             amount_due=10000.00,
             status=False,

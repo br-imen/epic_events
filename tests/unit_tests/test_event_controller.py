@@ -21,12 +21,11 @@ def test_create_event_controller(mock_session):
 
         create_event_controller(
             "123",
-            "Event Title",
             "Event Description",
-            "2022-01-01",
+            "2022-01-01 10:00",
+            "2023-01-01 10:00",
             "New York",
-            [],
-            "",
+            "144",
             "notes",
         )
         mock_event_save.assert_called_once()

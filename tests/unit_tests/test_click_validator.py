@@ -5,6 +5,7 @@ import click
 
 # Import the validation functions
 from validators.click_validator import (
+    validate_contract_id_is_signed,
     validate_email,
     validate_phone_number,
     validate_boolean,
@@ -19,7 +20,6 @@ from validators.click_validator import (
     validate_collaborator,
     validate_commercial,
     validate_contract,
-    validate_contract_id,
     validate_contract_by_collaborator,
     validate_role,
     validate_support,
@@ -229,17 +229,17 @@ def test_validate_contract(mock_session, mock_get_by_id):
 
 @patch("validators.click_validator.Contract.get_by_id")
 @patch("validators.click_validator.SessionLocal")
-def test_validate_contract_id(mock_session, mock_get_by_id):
+def test_validate_contract_id_is_signed(mock_session, mock_get_by_id):
     mock_session.return_value = MagicMock()
     mock_contract = MagicMock()
     mock_contract.status = True
     mock_get_by_id.return_value = mock_contract
 
-    assert validate_contract_id(None, None, 1) == 1
+    assert validate_contract_id_is_signed(None, None, 1) == 1
 
     mock_contract.status = False  # Simulate an unsigned contract
     with pytest.raises(click.BadParameter):
-        validate_contract_id(None, None, 1)
+        validate_contract_id_is_signed(None, None, 1)
 
 
 @patch("validators.click_validator.Contract.get_by_id")
