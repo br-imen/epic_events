@@ -491,6 +491,30 @@ def validate_contract_is_assigned_to_another_event(ctx, param, value):
     return value
 
 
+def validate_contract_is_not_assigned_to_event(ctx, param, value):
+    """
+    Validates the contract by checking if it is not assigned to an event.
+
+    Args:
+        ctx: The click context.
+        param: The click parameter.
+        value: The contract value to be validated.
+
+    Returns:
+        The validated contract value.
+
+    Raises:
+        click.BadParameter: If the contract is assigned to an event.
+    """
+    session = SessionLocal()
+    contract_id = ctx.params.get("id")
+    found_contract = Contract.get_by_id(contract_id, session)
+    if found_contract.event:
+        raise click.BadParameter("Contract is already assigned "
+                                 "to an event can't be unsigned")
+    session.close()
+    return value
+
 def validate_contract_for_event(ctx, param, value):
     """
     Validates the contract by collaborator.

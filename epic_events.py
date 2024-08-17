@@ -47,6 +47,7 @@ from validators.click_validator import (
     validate_contract_by_collaborator,
     validate_contract_for_event,
     validate_contract_id_existing_is_signed,
+    validate_contract_is_not_assigned_to_event,
     validate_date,
     validate_email,
     validate_email_exist,
@@ -514,7 +515,12 @@ def delete_contract(contract_id):
     help="Amount Due",
 )
 @click.option(
-    "--status", prompt="is signed", type=bool, required=True, help="Status"
+    "--status",
+    prompt="is signed",
+    callback=validate_contract_is_not_assigned_to_event,
+    type=bool,
+    required=True,
+    help="Status"
 )
 def update_contract(
     id, client_id, total_amount, amount_due, status
