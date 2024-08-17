@@ -32,6 +32,16 @@ def validate_email(ctx, param, value):
     return value
 
 
+def validate_email_exist(ctx, param, value):
+    validate_email(ctx, param, value)
+    session = SessionLocal()
+    collaborator = Collaborator.get_by_email(value, session)
+    if collaborator:
+        raise click.BadParameter("Email already exists")
+    session.close()
+    return value
+
+
 # Validate_phone_number
 def validate_phone_number(ctx, param, value):
     """
@@ -543,5 +553,28 @@ def validate_employee_number(ctx, param, value):
     collaborator = Collaborator.get_by_employee_number(value, session)
     if not collaborator:
         raise click.BadParameter("Employee_number not found")
+    session.close()
+    return value
+
+
+def validate_employee_number_exist(ctx, param, value):
+    """
+    Validates the employee number by checking if it exists in the database.
+
+    Args:
+        ctx: The click context object.
+        param: The click parameter object.
+        value: The value of the employee number to be validated.
+
+    Returns:
+        The validated employee number.
+
+    Raises:
+        click.BadParameter: If the employee number exist.
+    """
+    session = SessionLocal()
+    collaborator = Collaborator.get_by_employee_number(value, session)
+    if collaborator:
+        raise click.BadParameter("Employee_number already exist")
     session.close()
     return value

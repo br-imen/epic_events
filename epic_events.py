@@ -49,7 +49,9 @@ from validators.click_validator import (
     validate_contract_id_existing_is_signed,
     validate_date,
     validate_email,
+    validate_email_exist,
     validate_employee_number,
+    validate_employee_number_exist,
     validate_end_date,
     validate_event_assigned_to_support_id,
     validate_event_id,
@@ -166,6 +168,7 @@ def cli():
 @click.option(
     "--employee-number",
     prompt="Employee Number",
+    callback=validate_employee_number_exist,
     help="The employee number of the collaborator.",
 )
 @click.option(
@@ -174,7 +177,7 @@ def cli():
 @click.option(
     "--email",
     type=EmailStr,
-    callback=validate_email,
+    callback=validate_email_exist,
     prompt="Email",
     help="The email of the collaborator.",
 )
@@ -261,7 +264,7 @@ def delete_collaborator(employee_number):
     "--email",
     type=str,
     prompt="Email",
-    callback=validate_email,
+    callback=validate_email_exist,
     help="The email of the collaborator.",
 )
 @click.option(
