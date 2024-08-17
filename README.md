@@ -71,7 +71,49 @@ To install and set up the Epic Events CLI application on your local machine, fol
             SUPER_USER_PASSWORD
             SUPER_USER_EMAIL
 
-5. Run the CLI application:
+5. Ensure that the .env file has all these env variables:
+    ```bash
+    # Sentry DSN (Data Source Name) for error tracking.
+    SENTRY_DSN = ""
+
+    # Database connection URL.
+    DATABASE_URL= ""
+
+    # Database username.
+    DB_USER = ""
+
+    # Database password.
+    DB_PASSWORD = ""
+
+    # Database name.
+    DB_NAME = ""
+
+    # Default database type.
+    DEFAULT_DB = ""
+
+    # Superuser username.
+    SUPER_USER = ""
+
+    # Superuser password.
+    SUPER_USER_PASSWORD = ""
+
+    # Superuser email address.
+    SUPER_USER_EMAIL = ""
+
+    # Secret key for encryption.
+    SECRET_KEY = ""
+
+    # Algorithm used for token encryption.
+    ALGORITHM = ""
+
+    # Expiration time for access tokens in minutes.
+    ACCESS_TOKEN_EXPIRE_MINUTES = 
+
+    TOKEN_DIR_PATH = ""
+    TOKEN_FILENAME = ""
+    ```
+
+6. Run the CLI application:
 
     ```bash
     python epic_events.py
