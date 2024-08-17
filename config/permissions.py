@@ -33,6 +33,5 @@ ROLES_PERMISSIONS = {
         "update-contract",
         "delete-contract",
         "update-event",
-        "delete-event",
     ],
 }

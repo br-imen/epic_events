@@ -176,8 +176,9 @@ def logout_controller():
     """
     Logs out the user by deleting the access token file.
     """
-    token_dir_path = os.getenv("TOKEN_DIR_PATH")
-    token_path = os.path.join(token_dir_path, os.getenv("TOKEN_FILENAME"))
+    home_directory = os.path.expanduser("~")
+    token_path = os.path.join(home_directory, os.getenv("TOKEN_DIR_PATH"),
+                              os.getenv("TOKEN_FILENAME"))
     # Check if the file exists
     if os.path.exists(token_path):
         # Delete the token file

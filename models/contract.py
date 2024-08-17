@@ -44,7 +44,11 @@ class Contract(Base):
         "Collaborator", back_populates="contracts"
     )  # Sales collaborator
     event = relationship(
-        "Event", order_by="Event.id", back_populates="contract", uselist=False
+        "Event",
+        order_by="Event.id",
+        back_populates="contract",
+        uselist=False,
+        cascade="all, delete-orphan"
     )
 
     def save(self, session):

@@ -1,7 +1,7 @@
 [run]
 omit =
     config/database.py
-    config/sentry.py
+    config/logger.py
     config/permissions.py
     */__init__.py
     tests/*

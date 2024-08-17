@@ -244,10 +244,9 @@ def validate_client(ctx, param, value):
     return value
 
 
-# Validates that an event exists in the database.
 def validate_event_id(ctx, param, value):
     """
-    Validate the event ID by checking if it exists in the database.
+    Validate the event ID.
 
     Args:
         ctx (click.Context): The click context.
@@ -262,6 +261,10 @@ def validate_event_id(ctx, param, value):
     """
     session = SessionLocal()
     event = Event.get_by_id(value, session)
+    login_collaborator = get_login_collaborator(session)
+    if str(login_collaborator.role) == "support":
+        if event.collaborator_support_id != login_collaborator.id:
+            raise click.BadParameter("You are not allowed to update this event")
     if not event:
         raise click.BadParameter("Event not found")
     session.close()
@@ -432,6 +435,7 @@ def validate_contract_id_existing_is_signed(ctx, param, value):
         click.BadParameter: If the contract is not found or is not signed.
     """
     validate_existing_contract_id(ctx, param, value)
+    validate_contract_is_assigned_to_another_event(ctx, param, value)
     validate_contract_id_is_signed(ctx, param, value)
     return value
 
@@ -464,6 +468,29 @@ def validate_contract_by_collaborator(ctx, param, value):
     return value
 
 
+def validate_contract_is_assigned_to_another_event(ctx, param, value):
+    """
+    Validates the contract by checking if it is assigned to another event.
+
+    Args:
+        ctx: The click context.
+        param: The click parameter.
+        value: The contract value to be validated.
+
+    Returns:
+        The validated contract value.
+
+    Raises:
+        click.BadParameter: If the contract is assigned to another event.
+    """
+    session = SessionLocal()
+    found_contract = Contract.get_by_id(value, session)
+    if found_contract.event:
+        raise click.BadParameter("Contract is already assigned to an event")
+    session.close()
+    return value
+
+
 def validate_contract_for_event(ctx, param, value):
     """
     Validates the contract by collaborator.
@@ -481,6 +508,7 @@ def validate_contract_for_event(ctx, param, value):
         permission on the contract.
     """
     validate_contract_by_collaborator(ctx, param, value)
+    validate_contract_is_assigned_to_another_event(ctx, param, value)
     validate_contract_id_is_signed(ctx, param, value)
     return value
 
