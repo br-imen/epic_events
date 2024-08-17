@@ -90,7 +90,7 @@ def delete_contract_controller(contract_id):
                 contract.delete(session)
                 success_delete_contract_view()
             else:
-                error_contract_not_found_view()
+                error_contract_not_found_view(contract_id)
         finally:
             session.close()
 
@@ -133,10 +133,12 @@ def update_contract_controller(
                     contract.update(session, **validated_data.dict())
                     success_update_contract_view()
                     if contract_data["status"] is True:
-                        success_signed_contract_view()
+                        success_signed_contract_view(contract)
                 except AttributeError:
-                    error_client_collaborator_not_found_view()
+                    error_client_collaborator_not_found_view(
+                        client_id=client_id,
+                        )
             else:
-                error_contract_not_found_view()
+                error_contract_not_found_view(id)
         finally:
             session.close()

@@ -1,9 +1,12 @@
-import logging
+from config.logger import get_logger
+
+
+logger = get_logger()
 
 
 def validation_error_event_view(e):
     print(e)
-    logging.error(e)
+    logger.error(e)
 
 
 def success_create_event_view():
@@ -19,14 +22,14 @@ def success_delete_event_view():
     print("event deleted")
 
 
-def error_event_not_found_view():
+def error_event_not_found_view(event_id):
     print("event not found")
-    logging.error("event not found")
+    logger.error(f"event not found: {event_id}")
 
 
-def error_contact_client_support_not_found_view():
+def error_contact_client_support_not_found_view(**kwargs):
     print("contract or client or support not found")
-    logging.error("contract or client or support not found")
+    logger.error(f"contract or client or support not found: {kwargs}")
 
 
 def success_update_event_view():

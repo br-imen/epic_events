@@ -49,7 +49,7 @@ def create_client_controller(full_name, email, phone_number, company_name):
                 new_client.save(session)
                 success_create_client_view()
             else:
-                error_commercial_not_found_view()
+                error_commercial_not_found_view(commercial_collaborator_id)
         finally:
             session.close()
 

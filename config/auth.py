@@ -20,10 +20,8 @@ def create_access_token(data: dict):
     to_encode.update({"exp": expire})
     encoded_jwt = jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
 
-    # config_dir = os.path.join(os.path.expanduser("~"), ".config", "epic_events")
-    # token_path = os.path.join(config_dir, "access_token.txt")
-
-    token_dir_path = os.getenv("TOKEN_DIR_PATH")
+    home_directory = os.path.expanduser("~")
+    token_dir_path = os.path.join(home_directory, os.getenv("TOKEN_DIR_PATH"))
     os.makedirs(token_dir_path, exist_ok=True)
 
     token_path = os.path.join(token_dir_path, os.getenv("TOKEN_FILENAME"))
@@ -48,10 +46,9 @@ def get_email_from_access_token(token: str):
 
 # Get token from folder
 def get_token_from_file():
-    config_dir = os.path.join(os.path.expanduser("~"), ".config", "epic_events")
-    token_path = os.path.join(config_dir, "access_token.txt")
-
-    token_path = os.path.join(os.getenv("TOKEN_DIR_PATH"), os.getenv("TOKEN_FILENAME"))
+    home_directory = os.path.expanduser("~")
+    token_path = os.path.join(home_directory, os.getenv("TOKEN_DIR_PATH"),
+                              os.getenv("TOKEN_FILENAME"))
     if os.path.exists(token_path):
         with open(token_path, "r") as file:
             token = file.read().strip()

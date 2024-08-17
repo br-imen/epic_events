@@ -40,7 +40,7 @@ def test_update_collaborator_controller(mock_session):
     ) as mock_get_by_employee_number, patch(
         "controllers.collaborator_controller.success_update_collaborator_view"
     ) as mock_success_view, patch(
-        "controllers.collaborator_controller.error_collaborator_non_found_view"
+        "controllers.collaborator_controller.error_collaborator_not_found_view"
     ) as mock_error_view:
 
         update_collaborator_controller(
@@ -63,7 +63,7 @@ def test_delete_collaborator_controller(mock_session):
     ) as mock_get_by_employee_number, patch(
         "controllers.collaborator_controller.success_delete_collaborator_view"
     ) as mock_success_view, patch(
-        "controllers.collaborator_controller.error_collaborator_non_found_view"
+        "controllers.collaborator_controller.error_collaborator_not_found_view"
     ) as mock_error_view:
 
         delete_collaborator_controller("123")

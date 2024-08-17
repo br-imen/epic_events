@@ -9,8 +9,10 @@ from validators.event_validator import (
 from models.client import Client
 from models.contract import Contract
 from models.event import Event
+from views.client_view import error_client_not_found_view
+from views.collaborator_view import error_collaborator_not_found_view
+from views.contract_view import error_contract_not_found_view
 from views.event_view import (
-    error_contact_client_support_not_found_view,
     error_event_not_found_view,
     list_event_view,
     success_create_event_view,
@@ -68,7 +70,7 @@ def create_event_controller(
                     new_event.save(session)
                     success_create_event_view()
             else:
-                error_contact_client_support_not_found_view()
+                error_contract_not_found_view(contract_id)
         finally:
             session.close()
 
@@ -130,18 +132,21 @@ def update_event_controller(
                     collaborator = Collaborator.get_by_id(
                         collaborator_support_id, session=session
                     )
+                    if not collaborator:
+                        error_collaborator_not_found_view(collaborator_support_id)
                     client = Client.get_by_id(client_id, session)
+                    if not client:
+                        error_client_not_found_view(client_id)
                     contract = Contract.get_by_id(contract_id, session)
-                    if collaborator and client and contract:
-                        event.update(session, **validated_data.dict())
-                        success_update_event_view()
-                    else:
-                        error_contact_client_support_not_found_view()
+                    if not contract:
+                        error_contract_not_found_view(contract_id)
+                    event.update(session, **validated_data.dict())
+                    success_update_event_view()
                 else:
                     event.update(session, **validated_data.dict())
                     success_update_event_view()
             else:
-                error_event_not_found_view()
+                error_event_not_found_view(id)
         finally:
             session.close()
 
@@ -166,7 +171,7 @@ def delete_event_controller(id):
                 event.delete(session)
                 success_delete_event_view()
             else:
-                error_event_not_found_view()
+                error_event_not_found_view(id)
         finally:
             session.close()
 

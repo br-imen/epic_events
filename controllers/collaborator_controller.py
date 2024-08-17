@@ -8,7 +8,7 @@ from validators.collaborator_validator import (
 from models.collaborator import Collaborator
 from views.collaborator_view import (
     display_user_infos,
-    error_collaborator_non_found_view,
+    error_collaborator_not_found_view,
     success_delete_collaborator_view,
     success_login_view,
     success_create_collaborator_view,
@@ -47,7 +47,7 @@ def create_collaborator_controller(employee_number, name, email, role_id, passwo
         try:
             new_collaborator = Collaborator(**validated_data.dict())
             new_collaborator.save(session)
-            success_create_collaborator_view()
+            success_create_collaborator_view(new_collaborator)
         finally:
             session.close()
 
@@ -82,9 +82,9 @@ def update_collaborator_controller(employee_number, name, email, role_id, passwo
             )
             if collaborator:
                 collaborator.update(session, **validated_data.dict())
-                success_update_collaborator_view()
+                success_update_collaborator_view(collaborator)
             else:
-                error_collaborator_non_found_view()
+                error_collaborator_not_found_view(employee_number=employee_number)
 
         finally:
             session.close()
@@ -109,10 +109,11 @@ def delete_collaborator_controller(employee_number):
                 employee_number, session
             )
             if collaborator:
+                collaborator_infos = collaborator.__dict__
                 collaborator.delete(session)
-                success_delete_collaborator_view()
+                success_delete_collaborator_view(collaborator_infos)
             else:
-                error_collaborator_non_found_view()
+                error_collaborator_not_found_view(employee_number=employee_number)
         finally:
             session.close()
 
@@ -164,7 +165,7 @@ def authentication(email, password):
                 success_login_view()
                 return {"access_token": access_token, "token_type": "bearer"}
             else:
-                error_invalid_email_password_view()
+                error_invalid_email_password_view(email)
                 return None
         finally:
             session.close()

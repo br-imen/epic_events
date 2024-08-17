@@ -1,3 +1,4 @@
+import os
 from unittest.mock import patch, mock_open
 from datetime import datetime, timedelta, timezone
 from config.auth import (
@@ -81,7 +82,7 @@ def test_create_access_token(mock_jwt_encode, mock_datetime_now, mock_os_makedir
 
         # Assert access token is correct
         assert access_token == mock_encoded_token
-
+        home_directory = os.path.expanduser("~")
         # Assert the function calls
         mock_jwt_encode.assert_called_once_with(
             {
@@ -92,11 +93,11 @@ def test_create_access_token(mock_jwt_encode, mock_datetime_now, mock_os_makedir
             algorithm=ALGORITHM,
         )
         mock_os_makedirs.assert_called_once_with(
-            '~/tmp',
+            os.path.join(home_directory, "tmp"),
             exist_ok=True,
         )
         m.assert_called_once_with(
-            '~/tmp/access_token',
+            os.path.join(home_directory, "tmp", "access_token"),
             "w",
         )
         m().write.assert_called_once_with(mock_encoded_token)

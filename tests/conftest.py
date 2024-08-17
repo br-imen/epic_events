@@ -1,7 +1,7 @@
 import os
 os.environ["DATABASE_URL"] = "sqlite:///./test.db"
 os.environ["ACCESS_TOKEN_EXPIRE_MINUTES"] = "60"
-os.environ["TOKEN_DIR_PATH"] = "~/tmp"
+os.environ["TOKEN_DIR_PATH"] = "tmp"
 
 import pytest  # noqa: E402
 from unittest.mock import MagicMock  # noqa: E402
