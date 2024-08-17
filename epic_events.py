@@ -3,6 +3,7 @@ import click
 from dotenv import load_dotenv
 from pydantic import EmailStr
 from config.database import SessionLocal
+from config.logger import get_logger
 from controllers.client_controller import (
     create_client_controller,
     delete_client_controller,
@@ -767,6 +768,6 @@ def whoami():
 
 
 if __name__ == "__main__":
-    import config.sentry  # noqa
+    logger = get_logger() # noqa
 
     cli()
