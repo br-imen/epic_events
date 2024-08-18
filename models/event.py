@@ -29,7 +29,7 @@ class Event(Base):
 
     __tablename__ = "events"
     id = Column(Integer, primary_key=True, autoincrement=True)
-    client_id = Column(Integer, ForeignKey("clients.id"), nullable=False)
+    client_id = Column(Integer, ForeignKey("clients.id", ondelete="CASCADE"), nullable=False)
     contract_id = Column(Integer, ForeignKey("contracts.id", ondelete="CASCADE"),
                          nullable=False)
     description = Column(String, nullable=False)

@@ -38,9 +38,12 @@ class Client(Base):
     # Define a relationship to the Commercial model
     collaborator = relationship("Collaborator", back_populates="clients")
     contracts = relationship(
-        "Contract", order_by="Contract.id", back_populates="client"
+        "Contract", order_by="Contract.id", back_populates="client",
+        cascade="all, delete-orphan",
     )
-    events = relationship("Event", order_by="Event.id", back_populates="client")
+    events = relationship("Event", order_by="Event.id",
+                          back_populates="client",
+                          cascade="all, delete-orphan")
 
     # Active Record CRUD Methods
     def save(self, session):

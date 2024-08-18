@@ -33,7 +33,7 @@ class Contract(Base):
     __tablename__ = "contracts"
 
     id = Column(Integer, primary_key=True, index=True)
-    client_id = Column(Integer, ForeignKey("clients.id"), nullable=False)
+    client_id = Column(Integer, ForeignKey("clients.id", ondelete="CASCADE"), nullable=False)
     commercial_collaborator_id = Column(Integer, ForeignKey("collaborators.id"))
     total_amount = Column(Numeric, nullable=False)
     amount_due = Column(Numeric, nullable=False)
