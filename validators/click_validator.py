@@ -37,7 +37,10 @@ def validate_email_exist(ctx, param, value):
     session = SessionLocal()
     collaborator = Collaborator.get_by_email(value, session)
     employee_number = ctx.params.get("employee_number")
-    collaborator_by_employee_number = Collaborator.get_by_employee_number(employee_number, session)
+    collaborator_by_employee_number = Collaborator.get_by_employee_number(
+        employee_number,
+        session
+    )
     if collaborator and collaborator != collaborator_by_employee_number:
         raise click.BadParameter("Email already exists")
     session.close()

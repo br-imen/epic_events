@@ -33,7 +33,10 @@ class Client(Base):
     company_name = Column(String)
     creation_date = Column(DateTime, default=datetime.utcnow)
     last_contact = Column(DateTime, default=datetime.utcnow)
-    commercial_collaborator_id = Column(Integer, ForeignKey("collaborators.id", ondelete="SET NULL"), nullable=True)
+    commercial_collaborator_id = Column(Integer,
+                                        ForeignKey("collaborators.id",
+                                                   ondelete="SET NULL"),
+                                        nullable=True)
 
     # Define a relationship to the Commercial model
     collaborator = relationship("Collaborator", back_populates="clients")

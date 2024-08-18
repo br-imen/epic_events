@@ -33,8 +33,13 @@ class Contract(Base):
     __tablename__ = "contracts"
 
     id = Column(Integer, primary_key=True, index=True)
-    client_id = Column(Integer, ForeignKey("clients.id", ondelete="CASCADE"), nullable=False)
-    commercial_collaborator_id = Column(Integer, ForeignKey("collaborators.id", ondelete="SET NULL"), nullable=True)
+    client_id = Column(Integer,
+                       ForeignKey("clients.id", ondelete="CASCADE"),
+                       nullable=False)
+    commercial_collaborator_id = Column(Integer,
+                                        ForeignKey("collaborators.id",
+                                                   ondelete="SET NULL"),
+                                        nullable=True)
     total_amount = Column(Numeric, nullable=False)
     amount_due = Column(Numeric, nullable=False)
     creation_date = Column(Date, default=datetime.utcnow)

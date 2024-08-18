@@ -42,7 +42,6 @@ from validators.click_validator import (
     validate_boolean,
     validate_client,
     validate_client_by_sales,
-    validate_collaborator,
     validate_commercial,
     validate_contract_by_collaborator,
     validate_contract_for_event,
