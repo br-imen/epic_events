@@ -34,7 +34,7 @@ class Contract(Base):
 
     id = Column(Integer, primary_key=True, index=True)
     client_id = Column(Integer, ForeignKey("clients.id", ondelete="CASCADE"), nullable=False)
-    commercial_collaborator_id = Column(Integer, ForeignKey("collaborators.id"))
+    commercial_collaborator_id = Column(Integer, ForeignKey("collaborators.id", ondelete="SET NULL"), nullable=True)
     total_amount = Column(Numeric, nullable=False)
     amount_due = Column(Numeric, nullable=False)
     creation_date = Column(Date, default=datetime.utcnow)
@@ -136,7 +136,7 @@ class Contract(Base):
         return (
             f"Contract id={self.id}, client_id={self.client_id}, "
             f"commercial_id='{self.commercial_collaborator_id}', "
-            f"commercial='{self.collaborator.name}', "
+            f"commercial='{self.collaborator.name if self.collaborator else ''}', "
             f"total_amount={self.total_amount}, "
             f"amount_due={self.amount_due}, "
             f"creation_date={self.creation_date}, "

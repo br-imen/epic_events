@@ -207,7 +207,7 @@ class Collaborator(Base):
             f"employee_number={self.employee_number}, "
             f"name={self.name}, "
             f"email={self.email}, "
-            f"role={str(self.role)})  \n"
+            f"role={str(self.role)}  \n"
         )
 
     @staticmethod

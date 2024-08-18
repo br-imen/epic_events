@@ -36,7 +36,7 @@ class Event(Base):
     date_start = Column(DateTime, nullable=False)
     date_end = Column(DateTime, nullable=False)
     collaborator_support_id = Column(
-        Integer, ForeignKey("collaborators.id"), nullable=True
+        Integer, ForeignKey("collaborators.id", ondelete="SET NULL"), nullable=True
     )
     location = Column(String, nullable=False)
     attendees = Column(Integer, nullable=False)
