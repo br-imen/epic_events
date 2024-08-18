@@ -240,8 +240,8 @@ def list_collaborators():
 @click.option(
     "--employee-number",
     type=int,
-    callback=validate_collaborator,
     prompt="Employee Number",
+    callback=validate_employee_number,
     help="The employee number of the collaborator.",
 )
 def delete_collaborator(employee_number):

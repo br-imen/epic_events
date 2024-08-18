@@ -36,7 +36,9 @@ def validate_email_exist(ctx, param, value):
     validate_email(ctx, param, value)
     session = SessionLocal()
     collaborator = Collaborator.get_by_email(value, session)
-    if collaborator:
+    employee_number = ctx.params.get("employee_number")
+    collaborator_by_employee_number = Collaborator.get_by_employee_number(employee_number, session)
+    if collaborator and collaborator != collaborator_by_employee_number:
         raise click.BadParameter("Email already exists")
     session.close()
     return value
@@ -514,6 +516,7 @@ def validate_contract_is_not_assigned_to_event(ctx, param, value):
                                  "to an event can't be unsigned")
     session.close()
     return value
+
 
 def validate_contract_for_event(ctx, param, value):
     """
