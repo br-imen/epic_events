@@ -490,7 +490,7 @@ def validate_contract_is_assigned_to_another_event(ctx, param, value):
     """
     session = SessionLocal()
     found_contract = Contract.get_by_id(value, session)
-    if found_contract.event:
+    if found_contract.event and found_contract.event.id != ctx.params.get("id"):
         raise click.BadParameter("Contract is already assigned to an event")
     session.close()
     return value
@@ -607,6 +607,10 @@ def validate_employee_number(ctx, param, value):
     Raises:
         click.BadParameter: If the employee number is not found in the database.
     """
+    try:
+        int(value)
+    except ValueError:
+        raise click.BadParameter("Employee_number must be a number")
     session = SessionLocal()
     collaborator = Collaborator.get_by_employee_number(value, session)
     if not collaborator:
@@ -630,6 +634,10 @@ def validate_employee_number_exist(ctx, param, value):
     Raises:
         click.BadParameter: If the employee number exist.
     """
+    try:
+        int(value)
+    except ValueError:
+        raise click.BadParameter("Employee_number must be a number")
     session = SessionLocal()
     collaborator = Collaborator.get_by_employee_number(value, session)
     if collaborator:

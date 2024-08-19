@@ -129,6 +129,15 @@ class AuthGroup(click.Group):
         ctx.invoked_subcommand = (
             ctx.protected_args[0] if ctx.protected_args else None
         )
+        # Check if the invoked subcommand is in the list of available commands
+        if (ctx.invoked_subcommand not in self.commands and
+                ctx.invoked_subcommand not in ("update-event", )):
+            # If not, print an error message and return
+            click.echo(f"Error: Command '{ctx.invoked_subcommand}' "
+                       "is not a valid command.")
+            click.echo("Try 'epic_events.py --help' for help.")
+            ctx.exit(1)
+
         if ctx.invoked_subcommand not in ("login", "logout", "whoami"):
             if not is_authenticated():
                 authentication_required_view()
