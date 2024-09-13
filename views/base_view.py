@@ -8,3 +8,5 @@ def forbidden_denied_view():
 
 def authentication_required_view():
     print("Authentication required. Exiting.")
+
+# code
